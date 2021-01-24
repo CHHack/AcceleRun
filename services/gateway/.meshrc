@@ -8,4 +8,4 @@ sources:
       graphql:
         endpoint: https://api.github.com/graphql
         operationHeaders:
-          Authorization: Bearer 74e601a95804893649088f9b351e9d2b14fd60d2
+          Authorization: Bearer ${GITHUB_PERSONAL_TOKEN}
