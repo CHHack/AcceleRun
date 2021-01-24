@@ -2,10 +2,12 @@ sources:
   - name: Hackapod-DB
     handler:
       graphql:
-        endpoint: https://dawn-surf.us-east-1.aws.cloud.dgraph.io/graphql
-  - name: Github
+        endpoint: https://dawn-surf.us-east-1.aws.cloud.dgraph.io/graphql        
+  - name: Wiki
     handler:
-      graphql:
-        endpoint: https://api.github.com/graphql
-        operationHeaders:
-          Authorization: Bearer ${GITHUB_PERSONAL_TOKEN}
+      openapi:
+        source: https://api.apis.guru/v2/specs/wikimedia.org/1.0.0/swagger.yaml
+additionalTypeDefs:
+  - ./src/mesh/schema.gql  
+additionalResolvers:
+  - ./src/mesh/additional-resolvers.js

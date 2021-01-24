@@ -2,7 +2,10 @@
   "dependencies": {
     "@graphql-mesh/cli": "^0.18.0",
     "@graphql-mesh/graphql": "^0.13.7",
+    "@graphql-mesh/openapi": "^0.12.5",
     "global": "^4.4.0",
-    "graphql": "^15.4.0"
+    "graphql": "^15.4.0",
+    "lodash": "^4.17.20",
+    "moment": "^2.29.1"
   }
 }
