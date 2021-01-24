@@ -1,0 +1,11 @@
+sources:
+  - name: Hackapod-DB
+    handler:
+      graphql:
+        endpoint: https://dawn-surf.us-east-1.aws.cloud.dgraph.io/graphql
+  - name: Github
+    handler:
+      graphql:
+        endpoint: https://api.github.com/graphql
+        operationHeaders:
+          Authorization: Bearer 74e601a95804893649088f9b351e9d2b14fd60d2
