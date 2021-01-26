@@ -1,0 +1,17 @@
+{
+  "hostType": "lan",
+  "lanType": "ip",
+  "dev": true,
+  "minify": false,
+  "urlRandomness": null,
+  "https": false,
+  "web": {
+    "build": {
+      "babel": {
+        "include": [
+          "react-router-native"
+        ]
+      }
+    }
+  }
+}
