@@ -1,5 +1,4 @@
 import {
-    BrowserRouter as Router,
     Switch,
     Route,
     useHistory,
@@ -34,16 +33,16 @@ export default function Onboarding() {
                 <Route exact path={`${match.path}`}>
                     <Start changeStep={changeStep} />
                 </Route>
-                <Route path={`${match.path}/connect`}>
+                <Route path={`/onboarding/connect`}>
                     <Connect changeStep={changeStep} />
                 </Route>
-                <Route path={`${match.path}/contribute`}>
+                <Route path={`/onboarding/contribute`}>
                     <Contribute changeStep={changeStep} />
                 </Route>
-                <Route path={`${match.path}/info`}>
+                <Route path={`/onboarding/info`}>
                     <Info changeStep={changeStep} />
                 </Route>
-                <Route path={`${match.path}/idea`}>
+                <Route path={`/onboarding/idea`}>
                     <Idea changeStep={changeStep} />
                 </Route>
             </Switch>

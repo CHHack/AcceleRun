@@ -30,6 +30,7 @@
     box-sizing: border-box;
     transition: 0.1s;
     border-bottom: 1px solid rgb(120, 118, 136);
+    padding-left:18px;
   }
   
   :root {
@@ -333,13 +334,17 @@
     display: inline-block;
     min-width: 110px;
     margin: 5px;
-    padding: 0.3em 0.5em;
-    padding: var(--tag-pad, 0.3em 0.5em);
     line-height: inherit;
     position: relative;
     white-space: pre-wrap;
     color: #0af8d2;
     box-sizing: inherit;
+    height: 28px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    padding-top: 8px;
   }
   
   .tagify__input:empty::before {

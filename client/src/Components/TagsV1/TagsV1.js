@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react"
 import Tags from '@yaireo/tagify/dist/react.tagify';
+import search from '../../Assets/Images/Icons/search.svg'
 import './TagsV1.scss'
 
 
@@ -30,7 +31,7 @@ export default function TagsV1(props) {
   const baseTagifySettings = {
     blacklist: [],
     //backspace: "edit",
-    placeholder:  props.placeholder,
+    placeholder: props.placeholder,
     dropdown: {
       enabled: 0
     }
@@ -53,52 +54,62 @@ export default function TagsV1(props) {
 
   const onChange = useCallback((e) => {
     e.persist();
-    console.log("CHANGED:", e.target.value);
     props.action(e.target.value);
   }, [])
 
   return (
     <div style={styles.inputContainer}>
       <div style={styles.inputTitle}>{props.title}</div>
-      <Tags
-        className="input"
-        style={styles.input}
-        tagifyRef={tagifyRef}
-        settings={settings}
-        value=""
-        autoFocus={true}
-        {...tagifyProps}
-        onChange={onChange}
-      />
+      <div style={styles.inputWrapper}>
+        <div style={styles.icon}>
+          <img src={search} alt="search" />
+        </div>
+        <Tags
+          className="input"
+          style={styles.input}
+          tagifyRef={tagifyRef}
+          settings={settings}
+          value=""
+          autoFocus={false}
+          {...tagifyProps}
+          onChange={onChange}
+        />
+      </div>
     </div>
   )
 };
 
-
-
 const styles = {
   input: {
-      color: '#ffffff',
-      fontFamily: 'Montserrat',
-      fontStyle: 'normal',
-      fontWeight: 400,
-      fontSize: '16px',
-      borderTop:'none',
-      borderLeft:'none',
-      borderRight:'none',
-      borderBottom: '1px solid #787688',
-      height: '31px',
-      background:'#00000000',
-      width:'100%'
+    color: '#ffffff',
+    fontFamily: 'Montserrat',
+    fontStyle: 'normal',
+    fontWeight: 400,
+    fontSize: '16px',
+    borderTop: 'none',
+    borderLeft: 'none',
+    borderRight: 'none',
+    borderBottom: '1px solid #787688',
+    height: '31px',
+    background: '#00000000',
+    width: '100%'
   },
   inputTitle: {
-      color: '#ffffff',
-      fontFamily: 'Montserrat',
-      fontStyle: 'normal',
-      fontWeight: 400,
-      fontSize: '12px'
+    color: '#ffffff',
+    fontFamily: 'Montserrat',
+    fontStyle: 'normal',
+    fontWeight: 400,
+    fontSize: '12px'
   },
   inputContainer: {
-      marginBottom: '32px'
+    marginBottom: '32px'
+  },
+  inputWrapper:{
+    position:'relative'
+  },
+  icon: {
+    position: 'absolute',
+    left: '0px',
+    top:'12px'
   }
 };

@@ -7,11 +7,13 @@ import './Info.scss';
 
 export default function Info(props) {
     let [isNextButtonActive, setIsNextButtonActive] = useState(false);
+    let [shouldShowImage, setShouldShowImage] = useState(false);
+    let [imageSource, setImageSource] = useState("");
     let [name, setName] = useState("");
     let [lastName, setLastName] = useState("");
     let [positions, setPositions] = useState([]);
     let [skills, setSkills] = useState([]);
-    const [pictures, setPictures] = useState([]);
+    let [uploadedPicture, setPictures] = useState([]);
 
     useEffect(() => {
         const isNameExists = name !== "";
@@ -22,8 +24,12 @@ export default function Info(props) {
 
     }, [name, lastName, positions, skills]);
 
-    const onDrop = picture => {
-        setPictures([...pictures, picture]);
+    const onImageUploaded = (picture) => {
+        const reader = new FileReader();
+        reader.onload = (e)=> setImageSource(e.target.result);
+        reader.readAsDataURL(picture[0]);
+        setShouldShowImage(true);
+        setPictures(picture);
     };
 
     const onSetName = (name) => {
@@ -62,19 +68,26 @@ export default function Info(props) {
                         />
                     </div>
                     <div style={styles.imageUpload}>
-                        <ImageUploader
-                            {...props}
-                            className="image-uploader"
-                            labelClass="image-uploader"
-                            buttonClassName="image-uploader"
-                            buttonText="Drag & drop or upload your image"
-                            singleImage={true}
-                            withIcon={false}
-                            withLabel={false}
-                            onChange={onDrop}
-                            imgExtension={[".jpg", ".gif", ".png", ".gif"]}
-                            maxFileSize={5242880}
-                        />
+                        {shouldShowImage ?
+                            <div className="image-preview">
+                                <img src={imageSource} />
+                            </div>
+                            :
+                            <ImageUploader
+                                {...props}
+                                className="image-uploader"
+                                labelClass="image-uploader"
+                                buttonClassName="image-uploader"
+                                buttonText="Drag & drop or upload your image"
+                                singleImage={true}
+                                withIcon={false}
+                                withLabel={false}
+                                withPreview={false}
+                                onChange={onImageUploaded}
+                                imgExtension={[".jpg", ".gif", ".png", ".gif"]}
+                                maxFileSize={5242880}
+                            />
+                        }
                     </div>
                 </div>
 
