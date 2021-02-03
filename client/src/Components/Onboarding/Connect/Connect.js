@@ -4,8 +4,13 @@ import github from '../../../Assets/Images/Icons/github.svg'
 import twitter from '../../../Assets/Images/Icons/twitter.svg'
 import email from '../../../Assets/Images/Icons/email.svg'
 import ConnectButton from '../../ConnectButton/ConnectButton'
+import { useEffect } from 'react'
 
 export default function Start(props) {
+    useEffect(() => {
+        props.animate("connect");
+    }, []);
+
     return (
         <div style={styles.step}>
             <div style={styles.content}>

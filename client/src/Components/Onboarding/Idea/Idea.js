@@ -26,13 +26,17 @@ export default function Idea(props) {
         setTeamSkills(teamSkills);
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         const isIdeaExists = idea !== "";
         const isPitchExists = pitch !== "";
         const isIdeaCategoriesExists = ideaCategories.length > 0;
         const isTeamSkillsExists = teamSkills.length > 0;
         setIsNextButtonActive(isIdeaExists && isPitchExists && isIdeaCategoriesExists && isTeamSkillsExists);
-    },[idea, pitch, ideaCategories, teamSkills]);
+    }, [idea, pitch, ideaCategories, teamSkills]);
+
+    useEffect(() => {
+        props.animate("idea");
+    }, []);
 
     return (
         <div style={styles.stepWrapper}>

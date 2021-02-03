@@ -24,9 +24,13 @@ export default function Info(props) {
 
     }, [name, lastName, positions, skills]);
 
+    useEffect(() => {
+        props.animate("info");
+    }, []);
+
     const onImageUploaded = (picture) => {
         const reader = new FileReader();
-        reader.onload = (e)=> setImageSource(e.target.result);
+        reader.onload = (e) => setImageSource(e.target.result);
         reader.readAsDataURL(picture[0]);
         setShouldShowImage(true);
         setPictures(picture);

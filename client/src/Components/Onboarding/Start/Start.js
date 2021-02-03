@@ -1,10 +1,16 @@
+import { useEffect } from 'react';
 import image1 from '../../../Assets/Images/Home/image1.svg';
 
 export default function Start(props) {
+
+    useEffect(() => {
+        props.animate("start");
+    }, []);
+
     return (
         <div style={styles.step}>
             <div style={styles.content}>
-                <div style={styles.h1}>Lorem ipsum dolor sit amet elit.</div>
+                <div style={styles.h1}>Join a team by sharing an idea or skill</div>
                 <div style={styles.h2}>Lorem ipsum dolor sit amet elit.</div>
                 <button style={styles.button} onClick={() => props.changeStep("connect")}>
                     <div style={styles.buttonDiv}>Start now</div>

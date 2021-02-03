@@ -28,6 +28,10 @@ export default function Contribute(props) {
     };
 
     useEffect(() => {
+        props.animate("contribute");
+    }, []);
+
+    useEffect(() => {
         setIdeaSvgFill(ideaClass === "button-selected" ? neonGreen : darkBlue);
         setTeamSvgFill(teamClass === "button-selected" ? neonGreen : darkBlue);
     }, [ideaClass, teamClass]);

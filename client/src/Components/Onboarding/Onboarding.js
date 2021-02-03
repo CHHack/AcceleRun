@@ -11,18 +11,59 @@ import Connect from './Connect/Connect.js';
 import Contribute from './Contribute/Contribute.js';
 import Info from './Info/Info';
 import Idea from './Idea/Idea';
+import './Onboarding.scss'
+import {  useState } from "react";
 
 export default function Onboarding() {
     const history = useHistory();
-    let match = useRouteMatch();
+    const match = useRouteMatch();
+
+    let [eclipseStyle, setEclipseStyle] = useState({
+        left: '310px',
+        top: '235px',
+        position: 'absolute',
+        transition: '120ms ease'
+    });
 
     const changeStep = (step) => {
         history.push(`/onboarding/${step}`);
+        animate(step);
     }
+
+    const animate = (step) => {
+        let left = "";
+        let top = "";
+
+        console.log(step);
+        switch (step) {
+            case "start":
+                left = '310px';
+                top = '235px';
+                break;
+            case "connect":
+                left = '30px';
+                top = '-270px';
+                break;
+            case "contribute":
+                left = '100px';
+                top = '-385px';
+                break;
+            case "info":
+                left = '150px';
+                top = '-440px';
+                break;
+            case "idea":
+                left = '225px';
+                top = '-285px';
+                break;
+        }
+
+        setEclipseStyle({ left: left, top: top, position: 'absolute', transition: '500ms ease-in-out' })
+    };
 
     return (
         <div style={styles.wizard}>
-            <div style={styles.eclipse} >
+            <div style={eclipseStyle} >
                 <img src={eclipse} alt="logo" />
             </div>
             <header>
@@ -31,19 +72,19 @@ export default function Onboarding() {
 
             <Switch>
                 <Route exact path={`${match.path}`}>
-                    <Start changeStep={changeStep} />
+                    <Start changeStep={changeStep} animate={animate} />
                 </Route>
                 <Route path={`/onboarding/connect`}>
-                    <Connect changeStep={changeStep} />
+                    <Connect changeStep={changeStep} animate={animate} />
                 </Route>
                 <Route path={`/onboarding/contribute`}>
-                    <Contribute changeStep={changeStep} />
+                    <Contribute changeStep={changeStep} animate={animate} />
                 </Route>
                 <Route path={`/onboarding/info`}>
-                    <Info changeStep={changeStep} />
+                    <Info changeStep={changeStep} animate={animate} />
                 </Route>
                 <Route path={`/onboarding/idea`}>
-                    <Idea changeStep={changeStep} />
+                    <Idea changeStep={changeStep} animate={animate} />
                 </Route>
             </Switch>
         </div>
@@ -53,11 +94,6 @@ export default function Onboarding() {
 const styles = {
     logo: {
         width: '167.67px'
-    },
-    eclipse: {
-        position: 'absolute',
-        left: '310px',
-        top: '235px'
     },
     wizard: {
         width: '100%',
