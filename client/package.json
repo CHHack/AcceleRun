@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.3",
     "@testing-library/user-event": "^12.6.2",
+    "@xstate/react": "^1.2.2",
     "@yaireo/tagify": "^3.22.1",
     "node-sass": "^4.14.1",
     "react": "^17.0.1",
@@ -13,7 +14,8 @@
     "react-images-upload": "^1.2.8",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^0.2.4",
+    "xstate": "^4.16.0"
   },
   "scripts": {
     "start": "react-scripts start",

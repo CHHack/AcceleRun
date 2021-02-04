@@ -1,5 +1,5 @@
 import './Contribute.scss'
-export default function TeamSvg(props) {
+export default function SkillsSvg(props) {
 
     return (
         <div className="team">

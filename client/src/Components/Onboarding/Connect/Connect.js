@@ -16,11 +16,11 @@ export default function Start(props) {
             <div style={styles.content}>
                 <div style={styles.h1}> Sign in </div>
                 <div style={styles.h2}> Lorem ipsum dolor sit amet elit.</div>
-                <ConnectButton text="Sign in with Google" icon={google} action={() => props.changeStep("contribute")} />
-                <ConnectButton text="Sign in with Facebook" icon={facebook} action={() => props.changeStep("contribute")} />
-                <ConnectButton text="Sign in with Github" icon={github} action={() => props.changeStep("contribute")} />
-                <ConnectButton text="Sign in with Twitter" icon={twitter} action={() => props.changeStep("contribute")} />
-                <ConnectButton text="Sign in with Email" icon={email} action={() => props.changeStep("contribute")} />
+                <ConnectButton text="Sign in with Google" icon={google} action={() => props.changeStep("CONTRIBUTE")} />
+                <ConnectButton text="Sign in with Facebook" icon={facebook} action={() => props.changeStep("CONTRIBUTE")} />
+                <ConnectButton text="Sign in with Github" icon={github} action={() => props.changeStep("CONTRIBUTE")} />
+                <ConnectButton text="Sign in with Twitter" icon={twitter} action={() => props.changeStep("CONTRIBUTE")} />
+                <ConnectButton text="Sign in with Email" icon={email} action={() => props.changeStep("CONTRIBUTE")} />
             </div>
         </div>
     );

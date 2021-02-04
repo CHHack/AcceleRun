@@ -1,22 +1,23 @@
-import {
-    Switch,
-    Route,
-    useHistory,
-    useRouteMatch
-} from "react-router-dom";
+import { Switch, Route, useHistory, useRouteMatch } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useMachine } from '@xstate/react';
 import logo from '../../Assets/Images/logo.svg';
 import eclipse from '../../Assets/Images/eclipse.svg';
 import Start from './Start/Start.js';
 import Connect from './Connect/Connect.js';
 import Contribute from './Contribute/Contribute.js';
-import Info from './Info/Info';
-import Idea from './Idea/Idea';
+import Skills from './Skills/Skills.js';
+import Idea from './Idea/Idea.js';
 import './Onboarding.scss'
-import {  useState } from "react";
+import machine from '../../Machine.js';
 
 export default function Onboarding() {
     const history = useHistory();
     const match = useRouteMatch();
+    const [state, sendMachine] = useMachine(machine);
+
+
+    const onSendMachine = (nextState) => sendMachine(nextState);
 
     let [eclipseStyle, setEclipseStyle] = useState({
         left: '310px',
@@ -25,16 +26,18 @@ export default function Onboarding() {
         transition: '120ms ease'
     });
 
-    const changeStep = (step) => {
+    useEffect(() => {
+        console.log(state);
+        if(!state.value.onboarding){      
+            return;
+        }
+        const step = state.value.onboarding;
         history.push(`/onboarding/${step}`);
-        animate(step);
-    }
+    }, [state])
 
     const animate = (step) => {
         let left = "";
         let top = "";
-
-        console.log(step);
         switch (step) {
             case "start":
                 left = '310px';
@@ -72,19 +75,19 @@ export default function Onboarding() {
 
             <Switch>
                 <Route exact path={`${match.path}`}>
-                    <Start changeStep={changeStep} animate={animate} />
+                    <Start changeStep={onSendMachine} animate={animate} />
                 </Route>
                 <Route path={`/onboarding/connect`}>
-                    <Connect changeStep={changeStep} animate={animate} />
+                    <Connect changeStep={onSendMachine} animate={animate} />
                 </Route>
                 <Route path={`/onboarding/contribute`}>
-                    <Contribute changeStep={changeStep} animate={animate} />
+                    <Contribute changeStep={sendMachine} animate={animate} />
                 </Route>
-                <Route path={`/onboarding/info`}>
-                    <Info changeStep={changeStep} animate={animate} />
+                <Route path={`/onboarding/skills`}>
+                    <Skills changeStep={() => sendMachine} animate={animate} />
                 </Route>
                 <Route path={`/onboarding/idea`}>
-                    <Idea changeStep={changeStep} animate={animate} />
+                    <Idea changeStep={() => sendMachine} animate={animate} />
                 </Route>
             </Switch>
         </div>

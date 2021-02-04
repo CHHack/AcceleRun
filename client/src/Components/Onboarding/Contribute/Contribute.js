@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import NextButton from '../../NextButton/NextButton';
 import IdeaSvg from "./IdeaSvg.js";
-import TeamSvg from "./TeamSvg.js";
-import './Contribute.scss'
+import SkillsSvg from "./SkillsSvg.js";
+import './Contribute.scss';
 
 export default function Contribute(props) {
 
@@ -10,21 +10,21 @@ export default function Contribute(props) {
     const neonGreen = "#0af8d2";
 
     let [selectedContributionType, setSelectedContributionType] = useState(null);
-    let [teamClass, setTeamClass] = useState("button");
+    let [skillsClass, setSkillsClass] = useState("button");
     let [ideaClass, setIdeaClass] = useState("button");
     let [ideaSvgFill, setIdeaSvgFill] = useState(darkBlue);
-    let [teamSvgFill, setTeamSvgFill] = useState(darkBlue);
+    let [skillsSvgFill, setSkillsSvgFill] = useState(darkBlue);
 
-    const setTeamAsSelected = () => {
-        setSelectedContributionType("team");
-        setTeamClass("button-selected");
+    const setSkillsAsSelected = () => {
+        setSelectedContributionType("skills");
+        setSkillsClass("button-selected");
         setIdeaClass("button");
     };
 
     const setIdeaAsSelected = () => {
         setSelectedContributionType("idea");
         setIdeaClass("button-selected");
-        setTeamClass("button");
+        setSkillsClass("button");
     };
 
     useEffect(() => {
@@ -33,8 +33,8 @@ export default function Contribute(props) {
 
     useEffect(() => {
         setIdeaSvgFill(ideaClass === "button-selected" ? neonGreen : darkBlue);
-        setTeamSvgFill(teamClass === "button-selected" ? neonGreen : darkBlue);
-    }, [ideaClass, teamClass]);
+        setSkillsSvgFill(skillsClass === "button-selected" ? neonGreen : darkBlue);
+    }, [ideaClass, skillsClass]);
 
     return (
         <div style={styles.step}>
@@ -45,14 +45,16 @@ export default function Contribute(props) {
                         <IdeaSvg fill={ideaSvgFill} />
                         <div className="button-div">I have an idea</div>
                     </button>
-                    <button className={teamClass} onClick={() => setTeamAsSelected()}>
-                        <TeamSvg fill={teamSvgFill} />
+                    <button className={skillsClass} onClick={() => setSkillsAsSelected()}>
+                        <SkillsSvg fill={skillsSvgFill} />
                         <div className="button-div">I'd like to offer my skills / I want to help</div>
                     </button>
                 </div>
             </div>
             <div style={styles.botton}>
-                <NextButton isActive={selectedContributionType} action={() => props.changeStep("info")} />
+                <NextButton
+                    isActive={selectedContributionType}
+                    action={() => props.changeStep(selectedContributionType == "idea" ? "HAVE_AN_IDEA" : "HAV_SKILL")} />
             </div>
         </div>
     );

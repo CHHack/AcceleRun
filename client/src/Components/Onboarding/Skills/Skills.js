@@ -3,9 +3,9 @@ import ImageUploader from "react-images-upload";
 import InputV1 from '../../InputV1/InputV1';
 import TagsV1 from '../../TagsV1/TagsV1';
 import NextButton from '../../NextButton/NextButton';
-import './Info.scss';
+import './Skills.scss';
 
-export default function Info(props) {
+export default function Skills(props) {
     let [isNextButtonActive, setIsNextButtonActive] = useState(false);
     let [shouldShowImage, setShouldShowImage] = useState(false);
     let [imageSource, setImageSource] = useState("");
