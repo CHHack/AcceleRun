@@ -1,8 +1,6 @@
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
-// import { setContext } from '@apollo/link-context';
 
-// see: https://github.com/graphql/swapi-graphql
-const GRAPHQL_API_URL = 'https://vague-income.us-east-1.aws.cloud.dgraph.io/graphql';
+const GRAPHQL_API_URL = 'https://dawn-surf.us-east-1.aws.cloud.dgraph.io/graphql';
 
 /*
 uncomment the code below in case you are using a GraphQL API that requires some form of
