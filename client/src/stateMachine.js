@@ -1,51 +1,47 @@
-import { Machine, sendParent, send, assign, spawn } from 'xstate';
+import { Machine, interpret, sendParent, send, assign, spawn, createMachine } from "xstate";
 
 const loggedInSuccess = () => true
 const userAddedNotification = () => true
 const assetAddedNotification = () => true
 const podAddedNotification = () => true
 const podUpdatedNotification = () => true
-
 const addAssetMachine = {
-    initial: '',
+    initial: "",
     states: {
 
     }
 }
-
 const hasOnboarded = (context, event) => context.user.hasOnboarded;
-
 const remoteMachine = Machine({
-    id: 'remote',
-    initial: 'offline',
+    id: "remote",
+    initial: "offline",
     states: {
         offline: {
             on: {
-                WAKE: 'online'
+                WAKE: "online"
             }
         },
         online: {
             after: {
                 3000: {
-                    actions: sendParent('POD_UPDATED')
+                    actions: sendParent("POD_UPDATED")
                 }
             }
         }
     }
 });
-
 const hasOnBoardedMachine = {
-    id: 'hasOnboarded',
+    id: "hasOnboarded",
     context: { hasOnboarded: undefined },
-    initial: 'unknown',
+    initial: "unknown",
     states: {
         unknown: {
             on: {
                 // immediately take transition that satisfies conditional guard.
                 // otherwise, no transition occurs
-                '': [
-                    { target: '#main', cond: hasOnboarded },
-                    { target: '#onboarding', cond: !hasOnboarded }
+                "": [
+                    { target: "#main", cond: hasOnboarded },
+                    { target: "#onboarding", cond: !hasOnboarded }
                 ]
             }
         }
@@ -53,18 +49,21 @@ const hasOnBoardedMachine = {
 };
 
 const rootMachine = Machine({
-    id: 'AcceleRun',
-    initial: 'landing',
+    id: "AcceleRun",
+    initial: "loading",
     context: {
         retries: 0,
-        user: {}
+        auth: {},
+        user: {
+            hasOnboarded: false
+        }
     },
     states: {
-        landing: {
+        loading: {
             on: {
-                LOGIN: "login",
-                ONBOARDING: "onboarding"
-            }
+                ONBOARDING: "onboarding",
+                MAIN: "main"
+            },
         },
         login: {
             invoke: {
@@ -72,10 +71,7 @@ const rootMachine = Machine({
                 src: "authenticateUser",
                 onDone: {
                     target: "loggedIn",
-                    actions: assign({
-                        user: (context, event) =>
-                            event.data.user,
-                    }),
+                    actions: assign({ user: (context, event) => event.data.user }),
                 },
                 onError: {
                     target: "failure",
@@ -83,28 +79,47 @@ const rootMachine = Machine({
             },
         },
         failure: {
-            type: 'landing',
+            type: "onboarding",
         },
         loggedIn: {
             on: {
                 // immediately take transition that satisfies conditional guard.
                 // otherwise, no transition occurs
-                '': [
-                    { target: 'main', cond: hasOnboarded },
-                    { target: 'onboarding', cond: !hasOnboarded }
+                "": [
+                    { target: "main", cond: hasOnboarded },
+                    { target: "onboarding", cond: !hasOnboarded }
                 ]
             }
         },
         onboarding: {
             id: "onboarding",
-            initial: 'connect',
+            initial: "start",
+            meta: { path: "/onboarding" },
             states: {
-                connect: {
+                start: {
+                    entry: () => console.log("entry start"),
+                    exit: () => console.log("exit start"),
                     on: {
-                        CONTRIBUTE: "contribute"
+                        CONNECT: "connect"
+                    }
+                },
+                connect: {
+                    entry: () => console.log("entry connect"),
+                    exit: () => console.log("exit connect"),
+                    on: {
+                        CONTRIBUTE: {
+                            target: "contribute",
+                            actions: [
+                                () => console.log("connect to contribute"),
+                                assign({ authUser: (context, event) => event.authUser }),
+                            ]
+                        }
                     }
                 },
                 contribute: {
+                    entry: () => console.log("entry contribute"),
+                    exit: () => console.log("exit contribute"),
+
                     on: {
                         HAVE_AN_IDEA: "idea",
                         HAV_SKILL: "skills"
@@ -143,10 +158,7 @@ const rootMachine = Machine({
                 src: "updateUserOnboardingStatus",
                 onDone: {
                     target: "#main",
-                    actions: assign({
-                        user: (context, event) =>
-                            event.data.user,
-                    }),
+                    actions: assign({ user: (context, event) => event.data.user }),
                 },
                 onError: {
                     target: "#onboarding",
@@ -155,9 +167,9 @@ const rootMachine = Machine({
         },
         main: {
             id: "main",
-            initial: 'idle',
+            initial: "idle",
             on: {
-                LOGOUT: "landing"
+                LOGOUT: "onboarding"
             },
             context: {
                 talentWrangler: {}
@@ -182,7 +194,7 @@ const rootMachine = Machine({
                         talentWrangler: () => spawn(remoteMachine)
                     }),
                     on: {
-                        actions: send('WAKE', {
+                        actions: send("WAKE", {
                             to: (context) => context.talentWrangler
                         }),
                         "": "#main",
@@ -196,12 +208,10 @@ const rootMachine = Machine({
                 },
                 podUpdated: {
                     entry: podUpdatedNotification
-
                 },
-
                 projectView: {
                     id: "projectView",
-                    initial: 'idle',
+                    initial: "idle",
                     on: {
                         POD_ADDED: "podAdded",
                         POD_UPDATED: "podUpdated",
@@ -227,14 +237,12 @@ const rootMachine = Machine({
                 },
             }
         }
-    }
-}, {
+    },
     services: {
         authenticateUser: (context, event) => {
             return new Promise((resolve) => {
                 setTimeout(() => {
                     resolve({ user: { name: "Roie", hasOnboarded: false } });
-
                 }, 1000);
             });
         },
@@ -252,5 +260,59 @@ const rootMachine = Machine({
         }
     }
 });
+
+
+/** For test */
+// const log = (context, event) => { console.log(context); }
+// const promiseMachine = createMachine({
+//     id: 'promise',
+//     initial: 'pending',
+//     context: {
+//         user: {},
+//         count: 0
+//     },
+//     states: {
+//         pending: {
+//             actions: log,
+//             on: {
+//                 RESOLVE: {
+//                     target: 'resolved',
+//                     actions: [
+//                         log,
+//                         assign({ count: (context) => context.count + 1 })
+//                     ],
+//                 },
+//                 REJECT: 'rejected'
+//             }
+//         },
+//         resolved: {
+//             entry: [
+//                 log,
+//                 assign({ count: (context) => context.count + 1 })
+//             ],
+//             on: {
+//                 rejected: {
+//                     REJECT: "rejected"
+//                 }
+//             }
+//         },
+//         rejected: {
+//             actions: (context, event) => console.log('actions'),
+//             type: 'final'
+//         }
+//     },
+//     actions: {
+
+//     }
+// });
+// const promiseService = interpret(promiseMachine)
+//     .onChange(context => console.log(context))
+//     .onTransition(state => console.log(""));
+// promiseService.start();
+// setTimeout(() => {
+//     const state = promiseService.send('RESOLVE');
+//     console.log(state.context);
+// }, 2000);
+
 
 export default rootMachine;

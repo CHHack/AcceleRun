@@ -12,7 +12,7 @@ export default function Start(props) {
             <div style={styles.content}>
                 <div style={styles.h1}>Join a team by sharing an idea or skill</div>
                 <div style={styles.h2}>Lorem ipsum dolor sit amet elit.</div>
-                <button style={styles.button} onClick={() => props.changeStep("ONBOARDING")}>
+                <button style={styles.button} onClick={() => props.sendMachine("CONNECT")}>
                     <div style={styles.buttonDiv}>Start now</div>
                 </button>
             </div>

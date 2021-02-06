@@ -5,7 +5,9 @@ import TagsV1 from '../../TagsV1/TagsV1';
 import NextButton from '../../NextButton/NextButton';
 import './Skills.scss';
 
+
 export default function Skills(props) {
+
     let [isNextButtonActive, setIsNextButtonActive] = useState(false);
     let [shouldShowImage, setShouldShowImage] = useState(false);
     let [imageSource, setImageSource] = useState("");
@@ -15,20 +17,11 @@ export default function Skills(props) {
     let [skills, setSkills] = useState([]);
     let [uploadedPicture, setPictures] = useState([]);
 
-    useEffect(() => {
-        const isNameExists = name !== "";
-        const isLastNameExists = lastName !== "";
-        const isPositionExists = positions.length > 0;
-        const isSkillsExists = skills.length > 0;
-        setIsNextButtonActive(isNameExists && isLastNameExists && isPositionExists && isSkillsExists);
-
-    }, [name, lastName, positions, skills]);
-
-    useEffect(() => {
-        props.animate("info");
-    }, []);
-
-    const onImageUploaded = (picture) => {
+    const onSetName = name => setName(name);
+    const onSetLastName = lastName => setLastName(lastName);
+    const onSetPositions = position => setPositions(position);
+    const onSetSkills = skills => setSkills(skills);
+    const onImageUploaded = picture => {
         const reader = new FileReader();
         reader.onload = (e) => setImageSource(e.target.result);
         reader.readAsDataURL(picture[0]);
@@ -36,21 +29,22 @@ export default function Skills(props) {
         setPictures(picture);
     };
 
-    const onSetName = (name) => {
-        setName(name);
-    }
+    useEffect(() => {
+        const isNameExists = name !== "";
+        const isLastNameExists = lastName !== "";
+        const isPositionExists = positions.length > 0;
+        const isSkillsExists = skills.length > 0;
+        setIsNextButtonActive(isNameExists && isLastNameExists && isPositionExists && isSkillsExists);
+    }, [name, lastName, positions, skills]);
 
-    const onSetLastName = (lastName) => {
+    useEffect(() => {
+        props.animate("info");
+        setShouldShowImage(true);
+        const [firstName, lastName] = props.state.context.authUser.displayName.split(" ");
+        setName(firstName);
         setLastName(lastName);
-    }
-
-    const onSetPositions = (position) => {
-        setPositions(position);
-    }
-
-    const onSetSkills = (skills) => {
-        setSkills(skills);
-    }
+        setImageSource(props.state.context.authUser.photoURL);
+    }, []);
 
     return (
         <div style={styles.step}>
@@ -110,7 +104,7 @@ export default function Skills(props) {
                 />
             </div>
 
-            <NextButton isActive={isNextButtonActive} action={() => props.changeStep("idea")} />
+            <NextButton isActive={isNextButtonActive} action={() => props.sendMachine("idea")} />
         </div>
     );
 

@@ -10,21 +10,10 @@ export default function Idea(props) {
     let [ideaCategories, setIdeaCategories] = useState([]);
     let [teamSkills, setTeamSkills] = useState([]);
 
-    const onSetIdea = (idea) => {
-        setIdea(idea);
-    }
-
-    const onSetPitch = (pitch) => {
-        setPitch(pitch);
-    }
-
-    const onSetIdeaCategories = (ideaCategories) => {
-        setIdeaCategories(ideaCategories);
-    }
-
-    const onSetTeamSkills = (teamSkills) => {
-        setTeamSkills(teamSkills);
-    }
+    const onSetIdea = idea => setIdea(idea);
+    const onSetPitch = pitch => setPitch(pitch);
+    const onSetIdeaCategories = ideaCategories => setIdeaCategories(ideaCategories);
+    const onSetTeamSkills = teamSkills => setTeamSkills(teamSkills);
 
     useEffect(() => {
         const isIdeaExists = idea !== "";
@@ -73,7 +62,7 @@ export default function Idea(props) {
                 />
             </div>
 
-            <NextButton isActive={isNextButtonActive} action={() => props.changeStep("dashboard")} />
+            <NextButton isActive={isNextButtonActive} action={() => props.sendMachine("dashboard")} />
         </div>
     );
 
