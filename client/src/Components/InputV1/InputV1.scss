@@ -1,0 +1,32 @@
+.input-v1 {
+    .input {
+        color: #0af8d2;
+        font-family: Montserrat;
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        border-bottom: 1px solid #787688;
+        height: 31px;
+        background: #00000000;
+        width: 100%;
+    }
+
+    .input:focus {
+        border-bottom: 1px solid #0af8d2;
+    }
+
+    .input-title {
+        color: #ffffff;
+        font-family: Montserrat;
+        font-style: normal;
+        font-weight: 400;
+        font-size: 12px;
+    }
+
+    .input-container {
+        margin-bottom: 32px;
+    }
+}
