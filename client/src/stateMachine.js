@@ -48,7 +48,6 @@ const hasOnBoardedMachine = {
     }
 };
 
-
 const setContributionType = (context, event) => context.user.contributionType = event.contributionType;
 
 const setIdea = (context, event) => {
@@ -188,15 +187,6 @@ const rootMachine = Machine({
                         },
                     }
                 },
-                // ideaFormComplete: {
-                //     entry: (context, event) => console.log(context),
-                //     exit: (context, event) => console.log(context),
-                //     on: {
-                //         HAVE_AN_IDEA: "idea",
-                //         HAVE_SKILL: "skills",
-                //         DONE: "#postOnBoarding"
-                //     }
-                // },
                 skills: {
                     entry: (context, event) => console.log(context),
                     exit: (context, event) => console.log(context),
@@ -212,6 +202,15 @@ const rootMachine = Machine({
                     }
 
                 },
+                // ideaFormComplete: {
+                //     entry: (context, event) => console.log(context),
+                //     exit: (context, event) => console.log(context),
+                //     on: {
+                //         HAVE_AN_IDEA: "idea",
+                //         HAVE_SKILL: "skills",
+                //         DONE: "#postOnBoarding"
+                //     }
+                // },
                 // skillFormComplete: {
                 //     entry: (context, event) => console.log(context),
                 //     exit: (context, event) => console.log(context),
@@ -230,7 +229,7 @@ const rootMachine = Machine({
                 src: postOnboarding,
                 onDone: {
                     target: "#main",
-                    //     actions: assign({ user: (context, event) => event.data.user }),
+                    // actions: assign({ user: (context, event) => event.data.user }),
                 },
                 onError: {
                     target: "#onboarding",
@@ -320,58 +319,5 @@ const rootMachine = Machine({
         }
     }
 });
-
-/** For test */
-// const log = (context, event) => { console.log(context); }
-// const promiseMachine = createMachine({
-//     id: 'promise',
-//     initial: 'pending',
-//     context: {
-//         user: {},
-//         count: 0
-//     },
-//     states: {
-//         pending: {
-//             actions: log,
-//             on: {
-//                 RESOLVE: {
-//                     target: 'resolved',
-//                     actions: [
-//                         log,
-//                         assign({ count: (context) => context.count + 1 })
-//                     ],
-//                 },
-//                 REJECT: 'rejected'
-//             }
-//         },
-//         resolved: {
-//             entry: [
-//                 log,
-//                 assign({ count: (context) => context.count + 1 })
-//             ],
-//             on: {
-//                 rejected: {
-//                     REJECT: "rejected"
-//                 }
-//             }
-//         },
-//         rejected: {
-//             actions: (context, event) => console.log('actions'),
-//             type: 'final'
-//         }
-//     },
-//     actions: {
-
-//     }
-// });
-// const promiseService = interpret(promiseMachine)
-//     .onChange(context => console.log(context))
-//     .onTransition(state => console.log(""));
-// promiseService.start();
-// setTimeout(() => {
-//     const state = promiseService.send('RESOLVE');
-//     console.log(state.context);
-// }, 2000);
-
 
 export default rootMachine;
