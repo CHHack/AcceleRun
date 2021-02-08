@@ -21,8 +21,12 @@ export default function Start(props) {
         provider.addScope('email');
         firebaseApp.auth().signInWithPopup(provider).then((result) => {
             const user = result.user;
-            console.log(user.photoURL)
-            props.sendMachine({ type: "CONTRIBUTE", authUser: user });
+            props.sendMachine({ type: "CONTRIBUTE", authUser: {
+                    displayName: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL
+                } 
+            });
         });
     };
 

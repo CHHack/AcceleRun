@@ -54,7 +54,7 @@ export default function TagsV1(props) {
 
   const onChange = useCallback((e) => {
     e.persist();
-    props.action(e.target.value);
+    props.action(JSON.parse(e.target.value));
   }, [])
 
   return (

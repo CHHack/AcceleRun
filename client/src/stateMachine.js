@@ -1,4 +1,4 @@
-import { Machine, interpret, sendParent, send, assign, spawn, createMachine } from "xstate";
+import { Machine, sendParent, send, assign, spawn } from "xstate";
 
 const loggedInSuccess = () => true
 const userAddedNotification = () => true
@@ -48,16 +48,65 @@ const hasOnBoardedMachine = {
     }
 };
 
+
+const setContributionType = (context, event) => context.user.contributionType = event.contributionType;
+
+const setIdea = (context, event) => {
+    context.user.idea = event.idea;
+    context.user.hasOnboarded = true;
+}
+
+const setUser = (context, event) => {
+    context.user.name = event.user.name;
+    context.user.lastName = event.user.lastName;
+    context.user.email = context.authUser.email;
+    context.user.imageSource = event.user.imageSource;
+    context.user.positions = event.user.positions;
+    context.user.skills = event.user.skills;
+}
+
+const postOnboarding = (context, event) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log("onboarding done, saving user");
+            resolve();
+        }, 2000);
+    });
+}
+
+const contributionType = {
+    haveAnIdea: 0,
+    haveSkills: 1
+}
+
+const idea = {
+    idea: "",
+    pitch: "",
+    ideaCategory: [],
+    neededTeamSkills: []
+}
+
+const authUser = {};
+
+const user = {
+    hasOnboarded: false,
+    contributionType: contributionType.haveAnIdea,
+    name: "",
+    lastName: "",
+    email: "",
+    skills: null,
+    idea: null
+};
+
+const context = {
+    authUser,
+    user
+}
+
 const rootMachine = Machine({
     id: "AcceleRun",
     initial: "loading",
-    context: {
-        retries: 0,
-        auth: {},
-        user: {
-            hasOnboarded: false
-        }
-    },
+    context: context,
     states: {
         loading: {
             on: {
@@ -97,68 +146,91 @@ const rootMachine = Machine({
             meta: { path: "/onboarding" },
             states: {
                 start: {
-                    entry: () => console.log("entry start"),
-                    exit: () => console.log("exit start"),
+                    entry: (context, event) => console.log(context),
+                    exit: (context, event) => console.log(context),
                     on: {
                         CONNECT: "connect"
                     }
                 },
                 connect: {
-                    entry: () => console.log("entry connect"),
-                    exit: () => console.log("exit connect"),
+                    entry: (context, event) => console.log(context),
+                    exit: (context, event) => console.log(context),
                     on: {
                         CONTRIBUTE: {
                             target: "contribute",
                             actions: [
-                                () => console.log("connect to contribute"),
                                 assign({ authUser: (context, event) => event.authUser }),
                             ]
                         }
                     }
                 },
                 contribute: {
-                    entry: () => console.log("entry contribute"),
-                    exit: () => console.log("exit contribute"),
-
+                    entry: (context, event) => console.log(context),
+                    exit: (context, event) => console.log(context),
                     on: {
-                        HAVE_AN_IDEA: "idea",
-                        HAV_SKILL: "skills"
+                        HAVE_AN_IDEA: {
+                            target: "idea",
+                            actions: [setContributionType]
+                        },
+                        HAVE_SKILL: {
+                            target: "skills",
+                            actions: [setContributionType]
+                        },
                     }
                 },
                 idea: {
+                    entry: (context, event) => console.log(context),
+                    exit: (context, event) => console.log(context),
                     on: {
-                        SUBMIT: "ideaFormComplete"
+                        SUBMIT: {
+                            target: "#postOnBoarding",
+                            actions: [setIdea]
+                        },
                     }
                 },
-                ideaFormComplete: {
-                    on: {
-                        HAVE_AN_IDEA: "idea",
-                        HAV_SKILL: "skills",
-                        DONE: "#postOnBoarding"
-                    }
-                },
+                // ideaFormComplete: {
+                //     entry: (context, event) => console.log(context),
+                //     exit: (context, event) => console.log(context),
+                //     on: {
+                //         HAVE_AN_IDEA: "idea",
+                //         HAVE_SKILL: "skills",
+                //         DONE: "#postOnBoarding"
+                //     }
+                // },
                 skills: {
+                    entry: (context, event) => console.log(context),
+                    exit: (context, event) => console.log(context),
                     on: {
-                        SUBMIT: "skillFormComplete"
+                        SUBMIT: {
+                            target: "#postOnBoarding",
+                            actions: [setUser]
+                        },
+                        HAVE_AN_IDEA: {
+                            target: "idea",
+                            actions: [setUser]
+                        },
                     }
+
                 },
-                skillFormComplete: {
-                    on: {
-                        HAVE_AN_IDEA: "idea",
-                        HAV_SKILL: "skills",
-                        DONE: "#postOnBoarding"
-                    }
-                },
+                // skillFormComplete: {
+                //     entry: (context, event) => console.log(context),
+                //     exit: (context, event) => console.log(context),
+                //     on: {
+                //         HAVE_AN_IDEA: "idea",
+                //         HAVE_SKILL: "skills",
+                //         DONE: "#postOnBoarding"
+                //     }
+                // },
             }
         },
         postOnBoarding: {
             id: "postOnBoarding",
             invoke: {
                 id: "update-user-onboarding-status",
-                src: "updateUserOnboardingStatus",
+                src: postOnboarding,
                 onDone: {
                     target: "#main",
-                    actions: assign({ user: (context, event) => event.data.user }),
+                    //     actions: assign({ user: (context, event) => event.data.user }),
                 },
                 onError: {
                     target: "#onboarding",
@@ -175,6 +247,7 @@ const rootMachine = Machine({
                 talentWrangler: {}
             },
             states: {
+                entry: (context, event) => console.log("main"),
                 idle: {
                     on: {
                         ADD_PROJECT: "addProjectForm",
@@ -240,27 +313,13 @@ const rootMachine = Machine({
     },
     services: {
         authenticateUser: (context, event) => {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve({ user: { name: "Roie", hasOnboarded: false } });
-                }, 1000);
-            });
-        },
-        updateUserOnboardingStatus: (context, event) => {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve({
-                        user: {
-                            name: "Roie",
-                            hasOnboarded: true
-                        },
-                    });
-                }, 2000);
+            return new Promise(async (resolve) => {
+                console.log("fucllll");
+
             });
         }
     }
 });
-
 
 /** For test */
 // const log = (context, event) => { console.log(context); }

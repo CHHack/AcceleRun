@@ -54,7 +54,9 @@ export default function Contribute(props) {
             <div style={styles.botton}>
                 <NextButton
                     isActive={selectedContributionType}
-                    action={() => props.sendMachine(selectedContributionType == "idea" ? "HAVE_AN_IDEA" : "HAV_SKILL")} />
+                    action={() => props.sendMachine({type: "HAVE_SKILL",
+                        contributionType : selectedContributionType == "idea" ? "haveAnIdea" : "haveSkills",
+                    })} />
             </div>
         </div>
     );
