@@ -316,6 +316,9 @@ const rootMachine = Machine({
                 console.log("fucllll");
 
             });
+        },
+        updateUserOnboardingStatus: async (context, event) => {
+            const userUpdated = await updateUserOnboardingStatus()
         }
     }
 });
