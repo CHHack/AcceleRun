@@ -23,14 +23,15 @@ export default function Skills(props) {
     const onSetSkills = skills => setSkills(skills);
 
     const onNextButtonClicked = () => {
-        const stateType = props.state.context.user.contributionType === "haveAnIdea" ? "HAVE_AN_IDEA" : "SUBMIT";
-        props.sendMachine({type:stateType, user: { 
-            name,
-            lastName,
-            imageSource,
-            positions: positions.map(position => position.value),
-            skills:skills.map(skill => skill.value)
-        }});
+        props.sendMachine({
+            type: "SUBMIT", user: {
+                name,
+                lastName,
+                imageSource,
+                positions: positions.map(position => position.value),
+                skills: skills.map(skill => skill.value)
+            }
+        });
     }
 
     const onImageUploaded = picture => {
