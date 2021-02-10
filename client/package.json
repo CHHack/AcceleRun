@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^12.6.2",
     "@xstate/react": "^1.2.2",
     "@yaireo/tagify": "^3.22.1",
+    "dgraph-js-http": "^20.11.0",
     "firebase": "^8.2.6",
     "node-sass": "^4.14.1",
     "react": "^17.0.1",

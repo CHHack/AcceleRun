@@ -14,7 +14,7 @@ export default function App() {
 
   firebase.auth().onAuthStateChanged((user) => {
     if (state.context.user?.hasOnboarded) {
-      sendMachine({ type: "MAIN", payload: user });
+      sendMachine({ type: "MAIN", authUser: user });
       history.push("/portal");
     }
     else {
@@ -27,9 +27,8 @@ export default function App() {
     <div className="app">
 
       {
-        state.matches("loading") ? <Loading /> :
         state.matches("onboarding") ? <Onboarding state={state} sendMachine={sendMachine} /> :
-        state.matches("portal") ? <Portal /> : ""
+        state.matches("main") ? <Portal /> : <Loading />
       }
 
 

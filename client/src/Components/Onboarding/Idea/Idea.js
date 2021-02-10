@@ -15,6 +15,17 @@ export default function Idea(props) {
     const onSetIdeaCategories = ideaCategories => setIdeaCategories(ideaCategories);
     const onSetTeamSkills = teamSkills => setTeamSkills(teamSkills);
 
+    const onNextButtonClicked = () => {
+        props.sendMachine({
+            type: "SUBMIT", idea: {
+                idea,
+                pitch,
+                ideaCategories : ideaCategories.map(category => category.value),
+                teamSkills : teamSkills.map(skill => skill.value),
+            }
+        });
+    };
+
     useEffect(() => {
         const isIdeaExists = idea !== "";
         const isPitchExists = pitch !== "";
@@ -62,7 +73,7 @@ export default function Idea(props) {
                 />
             </div>
 
-            <NextButton isActive={isNextButtonActive} action={() => props.sendMachine("dashboard")} />
+            <NextButton isActive={isNextButtonActive} action={() => onNextButtonClicked()} />
         </div>
     );
 
