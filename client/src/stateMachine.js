@@ -227,7 +227,7 @@ const rootMachine = Machine({
             id: "postOnBoarding",
             invoke: {
                 id: "update-user-onboarding-status",
-                src: updateUserOnboardingStatus,
+                src: "updateUserOnboardingStatus",
                 onDone: {
                     target: "#main",
                 },
@@ -311,7 +311,7 @@ const rootMachine = Machine({
         }
     },
     services: {
-        authenticateUser: (context, event) => {
+        authenticateUser: async (context, event) => {
             //do authentication and get the user's email
             const email = "roie.cohen@gmail.com";
 
