@@ -1,4 +1,5 @@
 import { Machine, sendParent, send, assign, spawn } from "xstate";
+import api from './graphql/api'
 
 const loggedInSuccess = () => true
 const userAddedNotification = () => true
@@ -226,10 +227,9 @@ const rootMachine = Machine({
             id: "postOnBoarding",
             invoke: {
                 id: "update-user-onboarding-status",
-                src: postOnboarding,
+                src: updateUserOnboardingStatus,
                 onDone: {
                     target: "#main",
-                    // actions: assign({ user: (context, event) => event.data.user }),
                 },
                 onError: {
                     target: "#onboarding",
@@ -312,13 +312,26 @@ const rootMachine = Machine({
     },
     services: {
         authenticateUser: (context, event) => {
-            return new Promise(async (resolve) => {
-                console.log("fucllll");
+            //do authentication and get the user's email
+            const email = "roie.cohen@gmail.com";
 
-            });
+            //if user exists, return them
+            const user = await api.getPerson({ email })
+            if (!user) {
+                const newUser = {
+                    name: "Roie Schwaber-Cohen",
+                    email: "roie.cohen@gmail.com",
+                    clubhouseHandle: "@roie"
+                }
+                return await api.addNewPerson({ ...newUser })
+            }
+
+            else return user
+
         },
         updateUserOnboardingStatus: async (context, event) => {
-            const userUpdated = await updateUserOnboardingStatus()
+            const { user } = context
+            return await api.updateUserOnboardingStatus({ user })
         }
     }
 });
