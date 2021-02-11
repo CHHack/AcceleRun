@@ -1,7 +1,6 @@
 import { Machine, sendParent, send, assign, spawn } from "xstate";
 
-
-const loggedInSuccess = () => true
+const loggedInSuccess = () => false
 const userAddedNotification = () => true
 const assetAddedNotification = () => true
 const podAddedNotification = () => true
@@ -96,7 +95,7 @@ const idea = {
 const authUser = {};
 
 const user = {
-    hasOnboarded: true,
+    hasOnboarded: false,
     contributionType: contributionType.haveAnIdea,
     name: "",
     lastName: "",
@@ -117,30 +116,35 @@ const rootMachine = Machine({
     states: {
         loading: {
             on: {
-                ONBOARDING: "onboarding",
-                MAIN: "main"
-            },
+                MAIN: "main",
+                LANDING: "landing"
+            }
         },
-        onboarding: {
-            id: "onboarding",
-            initial: "start",
-            meta: { path: "/onboarding" },
+        landing: {
+            id: "landing",
+            initial: "home",
             states: {
+                home: {
+                    on: {
+                        LOGIN: "login",
+                        ONBOARDING: "#onboarding"
+                    }
+                },
                 login: {
                     invoke: {
                         id: "authenticate-user",
                         src: "authenticateUser",
                         onDone: {
                             target: "loggedIn",
-                        //    actions: assign({ user: (context, event) => event.data.user }),
+                            //    actions: assign({ user: (context, event) => event.data.user }),
                         },
                         onError: {
-                            target: "#onboarding",
+                            target: "home",
                         },
                     },
                 },
                 failure: {
-                    type: "onboarding",
+                    type: "home",
                 },
                 loggedIn: {
                     on: {
@@ -150,14 +154,14 @@ const rootMachine = Machine({
                         ]
                     }
                 },
-                start: {
-                    entry: (context, event) => console.log(context),
-                    exit: (context, event) => console.log(context),
-                    on: {
-                        LOGIN: "login",
-                        CONNECT: "connect"
-                    }
-                },
+            },
+
+        },
+        onboarding: {
+            id: "onboarding",
+            initial: "connect",
+            meta: { path: "/onboarding" },
+            states: {
                 connect: {
                     entry: (context, event) => console.log(context),
                     exit: (context, event) => console.log(context),
@@ -314,4 +318,5 @@ const rootMachine = Machine({
         }
     }
 });
+
 export default rootMachine;
