@@ -4,7 +4,6 @@ import logo from "../Assets/Images/logo.svg";
 export default function Landing(props) {
     return (
         <div style={styles.wizard}>
-            {props.children}
             <header>
                 <img src={logo} style={styles.logo} alt="logo" />
             </header>

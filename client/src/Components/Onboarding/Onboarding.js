@@ -12,11 +12,9 @@ export default function Onboarding(props) {
 
     return (
         <div style={styles.wizard}>
-            {props.children}
             <header>
                 <img src={logo} style={styles.logo} alt="logo" />
             </header>
-
             {
                 props.state.matches("onboarding.start") ? <Start state={props.state} sendMachine={props.sendMachine} animate={props.animate} /> :
                 props.state.matches("onboarding.connect") ? <Connect state={props.state} sendMachine={props.sendMachine} animate={props.animate} /> :
