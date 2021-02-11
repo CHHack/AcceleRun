@@ -12,14 +12,22 @@ export default function App() {
   const [state, sendMachine] = useMachine(machine, { devTools: true });
   const history = useHistory();
 
+  history.push(`/onboarding`);
+
+
   firebase.auth().onAuthStateChanged((user) => {
-    if (state.context.user?.hasOnboarded) {
+    console.log("USER", user)
+    if (user && state.context.user?.onBoarded) {
       sendMachine({ type: "MAIN", authUser: user });
       history.push("/portal");
     }
     else {
-      sendMachine("ONBOARDING");
-      history.push(`/onboarding`);
+      if (user) {
+        sendMachine("login");
+      }
+      else {
+        sendMachine("onboarding.connect");
+      }
     }
   });
 
@@ -27,8 +35,8 @@ export default function App() {
     <div className="app">
 
       {
-        state.matches("onboarding") ? <Onboarding state={state} sendMachine={sendMachine} /> :
-        state.matches("main") ? <Portal /> : <Loading />
+        state.matches("login") ? <Onboarding state={state} sendMachine={sendMachine} /> :
+          state.matches("main") ? <Portal /> : <Loading />
       }
 
 

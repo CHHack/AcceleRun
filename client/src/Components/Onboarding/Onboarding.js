@@ -44,7 +44,7 @@ export default function Onboarding(props) {
 
         setEclipseStyle({ left: left, top: top, position: "absolute", transition: "500ms ease-in-out" })
     };
-
+    console.log("CURRNET STATE", props.state.value)
     return (
         <div style={styles.wizard}>
             <div style={eclipseStyle} >
@@ -55,11 +55,11 @@ export default function Onboarding(props) {
             </header>
 
             {
-                props.state.matches("onboarding.start") ? <Start state={props.state} sendMachine={props.sendMachine} animate={animate} /> :
-                props.state.matches("onboarding.connect") ? <Connect state={props.state} sendMachine={props.sendMachine} animate={animate} /> :
-                props.state.matches("onboarding.contribute") ? <Contribute state={props.state} sendMachine={props.sendMachine} animate={animate} /> :
-                props.state.matches("onboarding.skills") ? <Skills state={props.state} sendMachine={props.sendMachine} animate={animate} /> :
-                props.state.matches("onboarding.idea") ? <Idea state={props.state} sendMachine={props.sendMachine} animate={animate} /> : ""
+                props.state.matches("login") ? <Start state={props.state} sendMachine={props.sendMachine} animate={animate} /> :
+                    props.state.matches("onboarding.connect") ? <Connect state={props.state} sendMachine={props.sendMachine} animate={animate} /> :
+                        props.state.matches("onboarding.contribute") ? <Contribute state={props.state} sendMachine={props.sendMachine} animate={animate} /> :
+                            props.state.matches("onboarding.skills") ? <Skills state={props.state} sendMachine={props.sendMachine} animate={animate} /> :
+                                props.state.matches("onboarding.idea") ? <Idea state={props.state} sendMachine={props.sendMachine} animate={animate} /> : ""
             }
 
             {/* <Switch>

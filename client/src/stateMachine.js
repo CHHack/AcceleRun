@@ -13,6 +13,8 @@ const addAssetMachine = {
     }
 }
 const hasOnboarded = (context, event) => context.user.hasOnboarded;
+const isLoggedIn = (context) => context.user
+
 const remoteMachine = Machine({
     id: "remote",
     initial: "offline",
@@ -110,11 +112,17 @@ const rootMachine = Machine({
     states: {
         loading: {
             on: {
+                "": {
+                    target: "login",
+                    cond: !isLoggedIn
+                },
                 ONBOARDING: "onboarding",
                 MAIN: "main"
             },
         },
         login: {
+            entry: (context, event) => console.log(context),
+            exit: (context, event) => console.log(context),
             invoke: {
                 id: "authenticate-user",
                 src: "authenticateUser",
@@ -311,23 +319,27 @@ const rootMachine = Machine({
         }
     },
     services: {
-        authenticateUser: async (context, event) => {
-            //do authentication and get the user's email
-            const email = "roie.cohen@gmail.com";
+        authenticateUser: (context, event) => {
+            console.log("WHAT")
+            return new Promise(async (reoslve, reject) => {
+                const email = "roie.cohen@gmail.com";
+                console.log("HELLO")
 
-            //if user exists, return them
-            const user = await api.getPerson({ email })
-            if (!user) {
-                const newUser = {
-                    name: "Roie Schwaber-Cohen",
-                    email: "roie.cohen@gmail.com",
-                    clubhouseHandle: "@roie"
+                //if user exists, return them
+                const user = await api.getPerson({ email })
+
+                console.log("THE USER", user)
+                if (!user) {
+                    const newUser = {
+                        name: "Roie Schwaber-Cohen",
+                        email: "roie.cohen@gmail.com",
+                        clubhouseHandle: "@roie"
+                    }
+                    return await api.addNewPerson({ ...newUser })
                 }
-                return await api.addNewPerson({ ...newUser })
-            }
 
-            else return user
-
+                else return user
+            })
         },
         updateUserOnboardingStatus: async (context, event) => {
             const { user } = context
