@@ -1,7 +1,7 @@
 import { Machine, sendParent, send, assign, spawn } from "xstate";
 import api from './graphql/api'
 
-const loggedInSuccess = () => true
+const loggedInSuccess = () => false
 const userAddedNotification = () => true
 const assetAddedNotification = () => true
 const podAddedNotification = () => true
@@ -13,8 +13,8 @@ const addAssetMachine = {
     }
 }
 const hasOnboarded = (context, event) => context.user.hasOnboarded;
-const isLoggedIn = (context) => context.user
 
+const haveAnIdea = (context, event) => context.user.contributionType === "haveAnIdea";
 const remoteMachine = Machine({
     id: "remote",
     initial: "offline",
@@ -40,8 +40,6 @@ const hasOnBoardedMachine = {
     states: {
         unknown: {
             on: {
-                // immediately take transition that satisfies conditional guard.
-                // otherwise, no transition occurs
                 "": [
                     { target: "#main", cond: hasOnboarded },
                     { target: "#onboarding", cond: !hasOnboarded }
@@ -73,6 +71,13 @@ const postOnboarding = (context, event) => {
             console.log("onboarding done, saving user");
             resolve();
         }, 2000);
+    });
+}
+
+const authenticateUser = (context, event) => {
+    return new Promise(async (resolve) => {
+        console.log("authenticateUser");
+        resolve();
     });
 }
 
@@ -112,54 +117,52 @@ const rootMachine = Machine({
     states: {
         loading: {
             on: {
-                "": {
-                    target: "login",
-                    cond: !isLoggedIn
-                },
-                ONBOARDING: "onboarding",
-                MAIN: "main"
-            },
-        },
-        login: {
-            entry: (context, event) => console.log(context),
-            exit: (context, event) => console.log(context),
-            invoke: {
-                id: "authenticate-user",
-                src: "authenticateUser",
-                onDone: {
-                    target: "loggedIn",
-                    actions: assign({ user: (context, event) => event.data.user }),
-                },
-                onError: {
-                    target: "failure",
-                },
-            },
-        },
-        failure: {
-            type: "onboarding",
-        },
-        loggedIn: {
-            on: {
-                // immediately take transition that satisfies conditional guard.
-                // otherwise, no transition occurs
-                "": [
-                    { target: "main", cond: hasOnboarded },
-                    { target: "onboarding", cond: !hasOnboarded }
-                ]
+                MAIN: "main",
+                LANDING: "landing"
             }
+        },
+        landing: {
+            id: "landing",
+            initial: "home",
+            states: {
+                home: {
+                    on: {
+                        LOGIN: "login",
+                        ONBOARDING: "#onboarding"
+                    }
+                },
+                login: {
+                    invoke: {
+                        id: "authenticate-user",
+                        src: "authenticateUser",
+                        onDone: {
+                            target: "loggedIn",
+                            //    actions: assign({ user: (context, event) => event.data.user }),
+                        },
+                        onError: {
+                            target: "home",
+                        },
+                    },
+                },
+                failure: {
+                    type: "home",
+                },
+                loggedIn: {
+                    on: {
+                        "": [
+                            { target: "#main", cond: hasOnboarded },
+                            { target: "#onboarding", cond: !hasOnboarded }
+                        ]
+                    }
+                },
+            },
+
         },
         onboarding: {
             id: "onboarding",
-            initial: "start",
+            initial: "connect",
             meta: { path: "/onboarding" },
             states: {
-                start: {
-                    entry: (context, event) => console.log(context),
-                    exit: (context, event) => console.log(context),
-                    on: {
-                        CONNECT: "connect"
-                    }
-                },
                 connect: {
                     entry: (context, event) => console.log(context),
                     exit: (context, event) => console.log(context),
@@ -201,15 +204,19 @@ const rootMachine = Machine({
                     exit: (context, event) => console.log(context),
                     on: {
                         SUBMIT: {
-                            target: "#postOnBoarding",
+                            target: "skillFormComplete",
                             actions: [setUser]
-                        },
-                        HAVE_AN_IDEA: {
-                            target: "idea",
-                            actions: [setUser]
-                        },
+                        }
                     }
 
+                },
+                skillFormComplete: {
+                    on: {
+                        "": [
+                            { target: "idea", cond: haveAnIdea },
+                            { target: "#postOnBoarding", cond: !haveAnIdea }
+                        ]
+                    }
                 },
                 // ideaFormComplete: {
                 //     entry: (context, event) => console.log(context),
@@ -220,15 +227,7 @@ const rootMachine = Machine({
                 //         DONE: "#postOnBoarding"
                 //     }
                 // },
-                // skillFormComplete: {
-                //     entry: (context, event) => console.log(context),
-                //     exit: (context, event) => console.log(context),
-                //     on: {
-                //         HAVE_AN_IDEA: "idea",
-                //         HAVE_SKILL: "skills",
-                //         DONE: "#postOnBoarding"
-                //     }
-                // },
+
             }
         },
         postOnBoarding: {
@@ -316,34 +315,6 @@ const rootMachine = Machine({
                     }
                 },
             }
-        }
-    },
-    services: {
-        authenticateUser: (context, event) => {
-            console.log("WHAT")
-            return new Promise(async (reoslve, reject) => {
-                const email = "roie.cohen@gmail.com";
-                console.log("HELLO")
-
-                //if user exists, return them
-                const user = await api.getPerson({ email })
-
-                console.log("THE USER", user)
-                if (!user) {
-                    const newUser = {
-                        name: "Roie Schwaber-Cohen",
-                        email: "roie.cohen@gmail.com",
-                        clubhouseHandle: "@roie"
-                    }
-                    return await api.addNewPerson({ ...newUser })
-                }
-
-                else return user
-            })
-        },
-        updateUserOnboardingStatus: async (context, event) => {
-            const { user } = context
-            return await api.updateUserOnboardingStatus({ user })
         }
     }
 });
