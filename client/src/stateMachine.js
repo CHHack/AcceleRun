@@ -1,5 +1,4 @@
 import { Machine, sendParent, send, assign, spawn } from "xstate";
-import api from './graphql/api'
 
 const loggedInSuccess = () => false
 const userAddedNotification = () => true
@@ -49,21 +48,7 @@ const hasOnBoardedMachine = {
     }
 };
 
-const setContributionType = (context, event) => context.user.contributionType = event.contributionType;
 
-const setIdea = (context, event) => {
-    context.user.idea = event.idea;
-    context.user.hasOnboarded = true;
-}
-
-const setUser = (context, event) => {
-    context.user.name = event.user.name;
-    context.user.lastName = event.user.lastName;
-    context.user.email = context.authUser.email;
-    context.user.imageSource = event.user.imageSource;
-    context.user.positions = event.user.positions;
-    context.user.skills = event.user.skills;
-}
 
 const postOnboarding = (context, event) => {
     return new Promise((resolve) => {
@@ -109,6 +94,8 @@ const context = {
     authUser,
     user
 }
+
+
 
 const rootMachine = Machine({
     id: "AcceleRun",
@@ -181,11 +168,11 @@ const rootMachine = Machine({
                     on: {
                         HAVE_AN_IDEA: {
                             target: "idea",
-                            actions: [setContributionType]
+                            actions: ['setContributionType']
                         },
                         HAVE_SKILL: {
                             target: "skills",
-                            actions: [setContributionType]
+                            actions: ['setContributionType']
                         },
                     }
                 },
@@ -195,7 +182,7 @@ const rootMachine = Machine({
                     on: {
                         SUBMIT: {
                             target: "#postOnBoarding",
-                            actions: [setIdea]
+                            actions: ["setIdea"]
                         },
                     }
                 },
@@ -205,7 +192,7 @@ const rootMachine = Machine({
                     on: {
                         SUBMIT: {
                             target: "skillFormComplete",
-                            actions: [setUser]
+                            actions: ["setUser"]
                         }
                     }
 
@@ -234,9 +221,9 @@ const rootMachine = Machine({
             id: "postOnBoarding",
             invoke: {
                 id: "update-user-onboarding-status",
-                src: "updateUserOnboardingStatus",
+                src: postOnboarding,
                 onDone: {
-                    target: "#main",
+                    target: "#main"
                 },
                 onError: {
                     target: "#onboarding",
@@ -315,6 +302,44 @@ const rootMachine = Machine({
                     }
                 },
             }
+        }
+    },
+    actions: {
+        setContributionType: (context, event) => assign({
+            ...context,
+            user: {
+                ...context.user,
+                contributionType: event.contributionType
+            }
+        }),
+
+        setIdea: (context, event) => assign(
+            {
+                user: {
+                    ...context.user,
+                    idea: event.idea,
+                    hasOnboarded: true
+                }
+            }
+        ),
+
+        setUser: (context, event) => {
+            let user = {}
+
+            user.name = event.user.name;
+            user.lastName = event.user.lastName;
+            user.email = context.authUser.email;
+            user.imageSource = event.user.imageSource;
+            user.positions = event.user.positions;
+            user.skills = event.user.skills;
+
+            return assign({
+                user: {
+                    ...context.user,
+                    ...user
+                }
+            })
+
         }
     }
 });

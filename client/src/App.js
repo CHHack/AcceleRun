@@ -55,12 +55,12 @@ export default function App() {
   firebase.auth().onAuthStateChanged((user) => {
     console.log("USER", user)
     if (user && state.context.user?.onBoarded) {
-      sendMachine({ type: "MAIN", authUser: user });
-      history.push("/portal");
+      // sendMachine({ type: "MAIN", authUser: user });
+      // history.push("/portal");
     }
     else {
       sendMachine("LANDING");
-      history.push(`/`);
+      // history.push(`/`);
     }
   });
 
@@ -70,15 +70,15 @@ export default function App() {
 
       {
         !state.matches("main") ?
-        <div style={eclipseStyle} >
-          <img src={eclipse} alt="logo" />
-        </div> : ""
+          <div style={eclipseStyle} >
+            <img src={eclipse} alt="logo" />
+          </div> : ""
       }
 
       {
-        state.matches("landing") ? <Landing state={state} sendMachine={sendMachine} animate={animate}/>:
-        state.matches("onboarding") ? <Onboarding state={state} sendMachine={sendMachine} animate={animate}/>:
-        state.matches("main") ? <Portal /> : <Loading />
+        state.matches("landing") ? <Landing state={state} sendMachine={sendMachine} animate={animate} /> :
+          state.matches("onboarding") ? <Onboarding state={state} sendMachine={sendMachine} animate={animate} /> :
+            state.matches("main") ? <Portal /> : <Loading />
       }
 
 
