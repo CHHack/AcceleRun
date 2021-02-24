@@ -1,10 +1,12 @@
 import { Machine, sendParent, send, assign, spawn } from "xstate";
-import { getPerson, addNewPerson, updateUserOnboardingStatus, addSkillToPerson } from './graphql/api'
+import api from './graphql/api'
+
 const loggedInSuccess = () => false
 const userAddedNotification = () => true
 const assetAddedNotification = () => true
 const podAddedNotification = () => true
 const podUpdatedNotification = () => true
+
 const addAssetMachine = {
     initial: "",
     states: {
@@ -162,8 +164,11 @@ const rootMachine = Machine({
                 },
                 addNewUser: {
                     invoke: {
-                        id: 'addNewPerson',
-                        src: 'addNewPerson',
+                        id: 'addPerson',
+                        src: async (context, event) => {
+                            const { user } = context;
+                            return await api.addNewPerson({ ...user });
+                        },
                         onDone: {
                             target: "contribute",
                         },
@@ -318,13 +323,14 @@ const rootMachine = Machine({
         }
     },
     services: {
-        getPerson: async (context, event) => {
+        getPerson: (context, event) => {
             const { user } = context
-            return await getPerson({ ...user })
+            return api.getPerson({ ...user })
         },
-        addNewPerson: async (context, event) => {
+        addPerson: (context, event) => {
+            console.log("addPerson");
             const { user } = context
-            return await addNewPerson({ ...user })
+            return api.addNewPerson({ ...user })
         }
     },
     actions: {
