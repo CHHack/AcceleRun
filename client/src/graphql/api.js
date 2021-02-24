@@ -2,7 +2,8 @@ import { apolloClient } from './apollo'
 import {
     MARK_PERSON_AS_ONBOARDED_MUTATION,
     ADD_NEW_PERSON_MUTATION,
-    GET_PERSON
+    GET_PERSON,
+    ADD_SKILLS_TO_PERSON_MUTATION
 } from './queries'
 
 const api = {
@@ -27,6 +28,14 @@ const api = {
         return await apolloClient.mutate({
             mutation: MARK_PERSON_AS_ONBOARDED_MUTATION, variables: {
                 email: user.email
+            }
+        })
+    },
+    addSkillToPerson: async ({ email, skills }) => {
+        return await apolloClient.mutate({
+            mutation: ADD_SKILLS_TO_PERSON_MUTATION, variables: {
+                email,
+                skills
             }
         })
     }

@@ -1,5 +1,5 @@
 import { Machine, sendParent, send, assign, spawn } from "xstate";
-
+import { getPerson, addNewPerson, updateUserOnboardingStatus, addSkillToPerson } from './graphql/api'
 const loggedInSuccess = () => false
 const userAddedNotification = () => true
 const assetAddedNotification = () => true
@@ -14,6 +14,7 @@ const addAssetMachine = {
 const hasOnboarded = (context, event) => context.user.hasOnboarded;
 
 const haveAnIdea = (context, event) => context.user.contributionType === "haveAnIdea";
+
 const remoteMachine = Machine({
     id: "remote",
     initial: "offline",
@@ -32,6 +33,7 @@ const remoteMachine = Machine({
         }
     }
 });
+
 const hasOnBoardedMachine = {
     id: "hasOnboarded",
     context: { hasOnboarded: undefined },
@@ -47,8 +49,6 @@ const hasOnBoardedMachine = {
         }
     }
 };
-
-
 
 const postOnboarding = (context, event) => {
     return new Promise((resolve) => {
@@ -94,8 +94,6 @@ const context = {
     authUser,
     user
 }
-
-
 
 const rootMachine = Machine({
     id: "AcceleRun",
@@ -155,12 +153,27 @@ const rootMachine = Machine({
                     exit: (context, event) => console.log(context),
                     on: {
                         CONTRIBUTE: {
-                            target: "contribute",
+                            target: "addNewUser",
                             actions: [
                                 assign({ authUser: (context, event) => event.authUser }),
                             ]
                         }
                     }
+                },
+                addNewUser: {
+                    invoke: {
+                        id: 'addNewPerson',
+                        src: 'addNewPerson',
+                        onDone: {
+                            target: "contribute",
+                        },
+                        onError: {
+                            target: "failure",
+                        },
+                    }
+                },
+                failure: {
+                    type: 'final'
                 },
                 contribute: {
                     entry: (context, event) => console.log(context),
@@ -221,7 +234,7 @@ const rootMachine = Machine({
             id: "postOnBoarding",
             invoke: {
                 id: "update-user-onboarding-status",
-                src: postOnboarding,
+                src: "postOnboarding",
                 onDone: {
                     target: "#main"
                 },
@@ -302,6 +315,16 @@ const rootMachine = Machine({
                     }
                 },
             }
+        }
+    },
+    services: {
+        getPerson: async (context, event) => {
+            const { user } = context
+            return await getPerson({ ...user })
+        },
+        addNewPerson: async (context, event) => {
+            const { user } = context
+            return await addNewPerson({ ...user })
         }
     },
     actions: {
