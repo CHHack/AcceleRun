@@ -3,7 +3,8 @@ import {
     MARK_PERSON_AS_ONBOARDED_MUTATION,
     ADD_NEW_PERSON_MUTATION,
     GET_PERSON,
-    ADD_SKILLS_TO_PERSON_MUTATION
+    ADD_SKILLS_TO_PERSON_MUTATION,
+    ADD_IDEA
 } from './queries'
 
 const api = {
@@ -14,12 +15,11 @@ const api = {
             }
         })
     },
-    addNewPerson: async ({ name, email, clubhouseHandle }) => {
+    addNewPerson: async ({ name, email }) => {
         return await apolloClient.mutate({
             mutation: ADD_NEW_PERSON_MUTATION, variables: {
                 name,
                 email,
-                clubhouseHandle,
                 onBoarded: false
             }
         })
@@ -36,6 +36,15 @@ const api = {
             mutation: ADD_SKILLS_TO_PERSON_MUTATION, variables: {
                 email,
                 skills
+            }
+        })
+    },
+    addIdea: async ({ name, goal, skillsNeeded}) => {
+        return await apolloClient.mutate({
+            mutation: ADD_IDEA, variables: {
+                name,
+                goal,
+                skillsNeeded
             }
         })
     }

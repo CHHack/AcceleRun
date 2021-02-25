@@ -1,5 +1,5 @@
 import { Machine, sendParent, send, assign, spawn } from "xstate";
-import api from './graphql/api'
+import api from "./graphql/api";
 
 const loggedInSuccess = () => false
 const userAddedNotification = () => true
@@ -84,7 +84,7 @@ const authUser = {};
 
 const user = {
     hasOnboarded: false,
-    contributionType: contributionType.haveAnIdea,
+    contributionType: "haveAnIdea",
     name: "",
     lastName: "",
     email: "",
@@ -151,8 +151,6 @@ const rootMachine = Machine({
             meta: { path: "/onboarding" },
             states: {
                 connect: {
-                    entry: (context, event) => console.log(context),
-                    exit: (context, event) => console.log(context),
                     on: {
                         CONTRIBUTE: {
                             target: "addNewUser",
@@ -164,13 +162,17 @@ const rootMachine = Machine({
                 },
                 addNewUser: {
                     invoke: {
-                        id: 'addPerson',
+                        id: "addPerson",
                         src: async (context, event) => {
-                            const { user } = context;
-                            return await api.addNewPerson({ ...user });
+                            const res = await api.addNewPerson({ ...context.authUser });   
+                            console.log(res); 
+                            return res;
                         },
                         onDone: {
                             target: "contribute",
+                            actions: [
+                                assign({ user: (context, event) => context.authUser }),
+                            ]
                         },
                         onError: {
                             target: "failure",
@@ -178,42 +180,92 @@ const rootMachine = Machine({
                     }
                 },
                 failure: {
-                    type: 'final'
+                    type: "final"
                 },
                 contribute: {
-                    entry: (context, event) => console.log(context),
-                    exit: (context, event) => console.log(context),
                     on: {
                         HAVE_AN_IDEA: {
                             target: "idea",
-                            actions: ['setContributionType']
+                            // this is not called
+                            // actions:["setContributionType"]
+                            // this is called
+                            actions: [
+                                assign({ user: (context, event) => {
+                                    console.log("inline function do called");
+                                    return context.authUser;
+                                }})
+                            ]
                         },
                         HAVE_SKILL: {
                             target: "skills",
-                            actions: ['setContributionType']
+                            // this is not called
+                            // actions:["setContributionType"]
+                            // this is called
+                            actions: [
+                                assign({ user: (context, event) => {
+                                    console.log("inline function do called");
+                                    return context.authUser;
+                                }})
+                            ]
                         },
                     }
                 },
                 idea: {
-                    entry: (context, event) => console.log(context),
-                    exit: (context, event) => console.log(context),
                     on: {
                         SUBMIT: {
+                            target: "addIdea",
+                            actions: [(context, event) => assign(
+                                {
+                                    user: {
+                                        ...context.user,
+                                        idea: event.idea,
+                                        hasOnboarded: true
+                                    }
+                                }
+                            )]
+                        },
+                    }
+                },
+                addIdea :{
+                    invoke: {
+                        id: "addIdea",
+                        src: async (context, event) => {
+                            const idea = {name : "", goal:"",skillsNeeded: [{name:"skill"}]};
+                            const res = await api.addIdea(idea);
+                            return res;
+                        },
+                        onDone: {
                             target: "#postOnBoarding",
-                            actions: ["setIdea"]
+                        },
+                        onError: {
+                            target: "failure",
                         },
                     }
                 },
                 skills: {
-                    entry: (context, event) => console.log(context),
-                    exit: (context, event) => console.log(context),
                     on: {
                         SUBMIT: {
-                            target: "skillFormComplete",
-                            actions: ["setUser"]
+                            target: "addUserSkills",
+                            actions: [assign({ user: (context, event) => event.user })]
                         }
                     }
-
+                },
+                addUserSkills: {
+                    invoke: {
+                        id: "addUserSkills",
+                        src: async (context, event) => {
+                            const mappedSkills = context.user.skills.map(skill => { return {name: skill} });
+                            const user = {email : context.authUser.email, skills: mappedSkills };
+                            const res = await api.addSkillToPerson(user);
+                            return res;
+                        },
+                        onDone: {
+                            target: "skillFormComplete",
+                        },
+                        onError: {
+                            target: "failure",
+                        },
+                    }
                 },
                 skillFormComplete: {
                     on: {
@@ -222,17 +274,7 @@ const rootMachine = Machine({
                             { target: "#postOnBoarding", cond: !haveAnIdea }
                         ]
                     }
-                },
-                // ideaFormComplete: {
-                //     entry: (context, event) => console.log(context),
-                //     exit: (context, event) => console.log(context),
-                //     on: {
-                //         HAVE_AN_IDEA: "idea",
-                //         HAVE_SKILL: "skills",
-                //         DONE: "#postOnBoarding"
-                //     }
-                // },
-
+                }
             }
         },
         postOnBoarding: {
@@ -323,25 +365,29 @@ const rootMachine = Machine({
         }
     },
     services: {
-        getPerson: (context, event) => {
+        getPerson: async (context, event) => {
             const { user } = context
-            return api.getPerson({ ...user })
+            return await api.getPerson({ ...user })
         },
-        addPerson: (context, event) => {
+        addPerson: async (context, event) => {
             console.log("addPerson");
             const { user } = context
-            return api.addNewPerson({ ...user })
+            return await api.addNewPerson({ ...user })
         }
     },
     actions: {
-        setContributionType: (context, event) => assign({
+        setContributionType: (context, event) => {
+
+            console.log("why you not called? :(");
+
+            return assign({
             ...context,
             user: {
                 ...context.user,
                 contributionType: event.contributionType
             }
-        }),
 
+        })},
         setIdea: (context, event) => assign(
             {
                 user: {

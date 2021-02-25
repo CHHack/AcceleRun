@@ -9,8 +9,8 @@ export const GET_PERSON = gql`
 `;
 
 export const ADD_NEW_PERSON_MUTATION = gql`
-  mutation addNewPerson($name: String!, $email: String!, $clubhouseHandle: String!) {
-    addPerson(input: {name: $name, email: $email, onBoarded: false, clubhouseHandle: $clubhouseHandle}) {
+  mutation addNewPerson($name: String!, $email: String!) {
+    addPerson(input: {name: $name, email: $email, onBoarded: false}) {
       person {
         email
       }
@@ -36,6 +36,20 @@ export const ADD_SKILLS_TO_PERSON_MUTATION = gql`
       person {
         email
         skills {
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const ADD_IDEA = gql`
+  mutation addIdea($name: String, $goal: String, $skillsNeeded: [SkillRef!]) {
+    addIdea(input: {name: $name, goal: $goal, skillsNeeded: $skillsNeeded}) {
+      idea {
+        goal
+        name
+        skillsNeeded {
           name
         }
       }

@@ -53,7 +53,7 @@ export default function Skills(props) {
     useEffect(() => {
         props.animate("info");
         setShouldShowImage(true);
-        const [firstName, lastName] = props.state.context.authUser.displayName.split(" ");
+        const [firstName, lastName] = props.state.context.authUser.name.split(" ");
         setName(firstName);
         setLastName(lastName);
         setImageSource(props.state.context.authUser.photoURL);
@@ -112,7 +112,7 @@ export default function Skills(props) {
                 <TagsV1
                     title="Where are the areas that you excel?"
                     placeholder="Find or add your skills"
-                    options={["Front end", "Back end", "React"]}
+                    options={["coding", "Back end", "React"]}
                     action={onSetSkills}
                 />
             </div>

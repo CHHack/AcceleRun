@@ -22,7 +22,7 @@ export default function Start(props) {
         firebaseApp.auth().signInWithPopup(provider).then((result) => {
             const user = result.user;
             props.sendMachine({ type: "CONTRIBUTE", authUser: {
-                    displayName: user.displayName,
+                    name: user.displayName,
                     email: user.email,
                     photoURL: user.photoURL
                 } 
