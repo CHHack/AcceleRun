@@ -13,9 +13,12 @@ const addAssetMachine = {
 
     }
 }
-const hasOnboarded = (context, event) => context.user.hasOnboarded;
 
-const haveAnIdea = (context, event) => context.user.contributionType === "haveAnIdea";
+// const hasOnboarded = (context, event) => context.user.hasOnboarded;
+// const haveAnIdea = (context, event) => context.user.contributionType === "haveAnIdea";
+
+const hasOnboarded = false
+const haveAnIdea = false
 
 const remoteMachine = Machine({
     id: "remote",
@@ -68,39 +71,23 @@ const authenticateUser = (context, event) => {
     });
 }
 
-const contributionType = {
-    haveAnIdea: 0,
-    haveSkills: 1
-}
 
-const idea = {
-    idea: "",
-    pitch: "",
-    ideaCategory: [],
-    neededTeamSkills: []
-}
-
-const authUser = {};
-
-const user = {
-    hasOnboarded: false,
-    contributionType: "haveAnIdea",
-    name: "",
-    lastName: "",
-    email: "",
-    skills: null,
-    idea: null
-};
-
-const context = {
-    authUser,
-    user
-}
 
 const rootMachine = Machine({
     id: "AcceleRun",
     initial: "loading",
-    context: context,
+    context: {
+        authUser: {},
+        user: {
+            hasOnboarded: false,
+            contributionType: "haveAnIdea",
+            name: "",
+            lastName: "",
+            email: "",
+            skills: null,
+            idea: null
+        }
+    },
     states: {
         loading: {
             on: {
@@ -124,7 +111,7 @@ const rootMachine = Machine({
                         src: "authenticateUser",
                         onDone: {
                             target: "loggedIn",
-                            //    actions: assign({ user: (context, event) => event.data.user }),
+                            actions: assign({ user: (context, event) => event.data.user }),
                         },
                         onError: {
                             target: "home",
@@ -154,25 +141,17 @@ const rootMachine = Machine({
                     on: {
                         CONTRIBUTE: {
                             target: "addNewUser",
-                            actions: [
-                                assign({ authUser: (context, event) => event.authUser }),
-                            ]
+                            actions: assign({ authUser: (context, event) => event.authUser })
                         }
                     }
                 },
                 addNewUser: {
                     invoke: {
                         id: "addPerson",
-                        src: async (context, event) => {
-                            const res = await api.addNewPerson({ ...context.authUser });   
-                            console.log(res); 
-                            return res;
-                        },
+                        src: "addPerson",
                         onDone: {
                             target: "contribute",
-                            actions: [
-                                assign({ user: (context, event) => context.authUser }),
-                            ]
+                            actions: assign({ user: (context, event) => context.authUser })
                         },
                         onError: {
                             target: "failure",
@@ -186,27 +165,11 @@ const rootMachine = Machine({
                     on: {
                         HAVE_AN_IDEA: {
                             target: "idea",
-                            // this is not called
-                            // actions:["setContributionType"]
-                            // this is called
-                            actions: [
-                                assign({ user: (context, event) => {
-                                    console.log("inline function do called");
-                                    return context.authUser;
-                                }})
-                            ]
+                            actions: ["setContributionType"]
                         },
                         HAVE_SKILL: {
                             target: "skills",
-                            // this is not called
-                            // actions:["setContributionType"]
-                            // this is called
-                            actions: [
-                                assign({ user: (context, event) => {
-                                    console.log("inline function do called");
-                                    return context.authUser;
-                                }})
-                            ]
+                            actions: ["setContributionType"]
                         },
                     }
                 },
@@ -214,7 +177,7 @@ const rootMachine = Machine({
                     on: {
                         SUBMIT: {
                             target: "addIdea",
-                            actions: [(context, event) => assign(
+                            actions: (context, event) => assign(
                                 {
                                     user: {
                                         ...context.user,
@@ -222,18 +185,14 @@ const rootMachine = Machine({
                                         hasOnboarded: true
                                     }
                                 }
-                            )]
+                            )
                         },
                     }
                 },
-                addIdea :{
+                addIdea: {
                     invoke: {
                         id: "addIdea",
-                        src: async (context, event) => {
-                            const idea = {name : "", goal:"",skillsNeeded: [{name:"skill"}]};
-                            const res = await api.addIdea(idea);
-                            return res;
-                        },
+                        src: "addIdea",
                         onDone: {
                             target: "#postOnBoarding",
                         },
@@ -246,19 +205,14 @@ const rootMachine = Machine({
                     on: {
                         SUBMIT: {
                             target: "addUserSkills",
-                            actions: [assign({ user: (context, event) => event.user })]
+                            actions: assign({ user: (context, event) => event.user })
                         }
                     }
                 },
                 addUserSkills: {
                     invoke: {
                         id: "addUserSkills",
-                        src: async (context, event) => {
-                            const mappedSkills = context.user.skills.map(skill => { return {name: skill} });
-                            const user = {email : context.authUser.email, skills: mappedSkills };
-                            const res = await api.addSkillToPerson(user);
-                            return res;
-                        },
+                        src: "addUserSkill",
                         onDone: {
                             target: "skillFormComplete",
                         },
@@ -329,11 +283,13 @@ const rootMachine = Machine({
                     }
                 },
                 podAdded: {
-                    entry: podAddedNotification,
+                    // entry: podAddedNotification,
+                    type: "final"
 
                 },
                 podUpdated: {
-                    entry: podUpdatedNotification
+                    // entry: podUpdatedNotification
+                    type: "final"
                 },
                 projectView: {
                     id: "projectView",
@@ -357,7 +313,8 @@ const rootMachine = Machine({
                             }
                         },
                         assetAdded: {
-                            entry: assetAddedNotification
+                            // entry: assetAddedNotification
+                            type: "final"
                         },
                     }
                 },
@@ -365,57 +322,73 @@ const rootMachine = Machine({
         }
     },
     services: {
-        getPerson: async (context, event) => {
-            const { user } = context
-            return await api.getPerson({ ...user })
+        getPerson: (context, event) => {
+            return new Promise(async (resolve, reject) => {
+                const { authUser } = context
+
+                const result = await api.getPerson({ ...authUser })
+                resolve(result)
+            })
         },
-        addPerson: async (context, event) => {
-            console.log("addPerson");
-            const { user } = context
-            return await api.addNewPerson({ ...user })
-        }
-    },
-    actions: {
-        setContributionType: (context, event) => {
-
-            console.log("why you not called? :(");
-
-            return assign({
-            ...context,
-            user: {
-                ...context.user,
-                contributionType: event.contributionType
-            }
-
-        })},
-        setIdea: (context, event) => assign(
-            {
-                user: {
-                    ...context.user,
-                    idea: event.idea,
-                    hasOnboarded: true
-                }
-            }
-        ),
-
-        setUser: (context, event) => {
-            let user = {}
-
-            user.name = event.user.name;
-            user.lastName = event.user.lastName;
-            user.email = context.authUser.email;
-            user.imageSource = event.user.imageSource;
-            user.positions = event.user.positions;
-            user.skills = event.user.skills;
-
-            return assign({
-                user: {
-                    ...context.user,
-                    ...user
-                }
+        addPerson: (context, event) => {
+            return new Promise(async (resolve, reject) => {
+                const { authUser } = context
+                const result = await api.addNewPerson({ ...authUser })
+                resolve(result)
+            })
+        },
+        addIdea: (context, event) => {
+            return new Promise(async (resolve, reject) => {
+                const idea = { name: "", goal: "", skillsNeeded: [{ name: "skill" }] };
+                const res = await api.addIdea(idea);
+                resolve(res);
+            })
+        },
+        addUserSkill: (context, event) => {
+            return new Promise(async (resolve, reject) => {
+                const mappedSkills = context.user.skills.map(skill => { return { name: skill } });
+                const user = { email: context.authUser.email, skills: mappedSkills };
+                const res = await api.addSkillToPerson(user);
+                resolve(res);
             })
 
         }
+    },
+    actions: {
+        setContributionType: assign({
+            user: (context, event) => ({
+                ...context.user,
+                contributionType: event.contributionType
+            })
+
+        }),
+        setIdea: assign({
+            user: (context, event) => ({
+                ...context.user,
+                idea: event.idea,
+                hasOnboarded: true
+            })
+        }),
+
+        setUser: assign({
+            user: (context, event) => {
+                let user = {}
+
+                user.name = event.user.name;
+                user.lastName = event.user.lastName;
+                user.email = context.authUser.email;
+                user.imageSource = event.user.imageSource;
+                user.positions = event.user.positions;
+                user.skills = event.user.skills;
+
+                return assign({
+                    user: {
+                        ...context.user,
+                        ...user
+                    }
+                })
+            }
+        })
     }
 });
 
