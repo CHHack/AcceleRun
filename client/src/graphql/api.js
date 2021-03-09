@@ -8,7 +8,7 @@ import {
 } from './queries'
 
 const api = {
-    getPerson: async ({ name, email, clubhouseHandle }) => {
+    getPerson: async (email) => {
         return await apolloClient.query({
             query: GET_PERSON, variables: {
                 email

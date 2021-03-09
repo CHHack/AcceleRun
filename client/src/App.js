@@ -9,6 +9,7 @@ import firebase from "./firebase.js";
 import machine from "./stateMachine.js";
 import eclipse from "./Assets/Images/eclipse.svg";
 import Landing from "./Components/Landing.js";
+import api from "./graphql/api";
 import "./App.scss";
 
 export default function App() {
@@ -52,15 +53,13 @@ export default function App() {
   };
 
 
-  firebase.auth().onAuthStateChanged((user) => {
-    console.log("USER", user)
-    if (user && state.context.user?.onBoarded) {
-      // sendMachine({ type: "MAIN", authUser: user });
-      // history.push("/portal");
+  firebase.auth().onAuthStateChanged(async (authUser) => {
+    if (authUser && !state.context.authUser) {
+      const response = await api.getPerson(authUser.email);
+      sendMachine({ type: response.data.getPerson.onBoarded ? "MAIN" : "LANDING", authUser: authUser });
     }
     else {
-      sendMachine("LANDING");
-      // history.push(`/`);
+      sendMachine({ type: "LANDING", authUser: authUser });
     }
   });
 

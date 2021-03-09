@@ -3,7 +3,9 @@ import gql from "graphql-tag";
 export const GET_PERSON = gql`
   query getPerson($email: String!){
     getPerson(email: $email){
+      onBoarded
       name
+      email
     }
   }
 `;

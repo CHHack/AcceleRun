@@ -77,7 +77,7 @@ const rootMachine = Machine({
     id: "AcceleRun",
     initial: "loading",
     context: {
-        authUser: {},
+        authUser: null,
         user: {
             hasOnboarded: false,
             contributionType: "haveAnIdea",
@@ -91,8 +91,14 @@ const rootMachine = Machine({
     states: {
         loading: {
             on: {
-                MAIN: "main",
-                LANDING: "landing"
+                MAIN: {
+                    target: "main",
+                    actions: assign({ authUser: (context, event) => event.authUser })
+                },
+                LANDING: {
+                    target: "landing",
+                    actions: assign({ authUser: (context, event) => event.authUser })
+                }
             }
         },
         landing: {
