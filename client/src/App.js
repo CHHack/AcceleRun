@@ -56,7 +56,7 @@ export default function App() {
   firebase.auth().onAuthStateChanged(async (authUser) => {
     if (authUser && !state.context.authUser) {
       const response = await api.getPerson(authUser.email);
-      sendMachine({ type: response.data.getPerson.onBoarded ? "MAIN" : "LANDING", authUser: authUser });
+      sendMachine({ type: response?.data?.getPerson?.onBoarded ? "MAIN" : "LANDING", authUser: authUser });
     }
     else {
       sendMachine({ type: "LANDING", authUser: authUser });
@@ -67,12 +67,12 @@ export default function App() {
   return (
     <div className="app">
 
-      {
-        !state.matches("main") ?
+      {/* {
+        !state.matches("main") &&
           <div style={eclipseStyle} >
             <img src={eclipse} alt="logo" />
-          </div> : ""
-      }
+          </div>
+      } */}
 
       {
         state.matches("landing") ? <Landing state={state} sendMachine={sendMachine} animate={animate} /> :

@@ -24,10 +24,10 @@ const api = {
             }
         })
     },
-    updateUserOnboardingStatus: async ({ user }) => {
+    updateUserOnboardingStatus: async (email) => {
         return await apolloClient.mutate({
             mutation: MARK_PERSON_AS_ONBOARDED_MUTATION, variables: {
-                email: user.email
+                email: email
             }
         })
     },
@@ -39,7 +39,7 @@ const api = {
             }
         })
     },
-    addIdea: async ({ name, goal, skillsNeeded}) => {
+    addIdea: async ({ name, goal, skillsNeeded }) => {
         return await apolloClient.mutate({
             mutation: ADD_IDEA, variables: {
                 name,

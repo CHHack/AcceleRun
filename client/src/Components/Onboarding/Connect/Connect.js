@@ -16,7 +16,7 @@ export default function Start(props) {
     }, []);
 
     const connectWithGoogle = () => {
-        const provider = new firebase.auth.GoogleAuthProvider();
+        const provider = new firebase.auth.Googleprovider();
         provider.addScope('profile');
         provider.addScope('email');
         firebaseApp.auth().signInWithPopup(provider).then((result) => {
@@ -31,21 +31,45 @@ export default function Start(props) {
     };
 
     const connectWithFacebook = () => {
-        const authProvider = new firebase.auth.FacebookAuthProvider();
-        firebase.auth().signInWithPopup(authProvider);
-        props.sendMachine("CONTRIBUTE");
+        const provider = new firebase.auth.FacebookAuthProvider();
+        // provider.addScope("pages_read_engagement");
+        firebaseApp.auth().signInWithPopup(provider).then((result) => {
+            const user = result.user;
+            props.sendMachine({ type: "CONTRIBUTE", authUser: {
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL
+                } 
+            });
+        });
     }
 
     const connectWithGithub = () => {
-        const authProvider = new firebase.auth.GithubAuthProvider();
-        firebase.auth().signInWithPopup(authProvider);
-        props.sendMachine("CONTRIBUTE");
+        const provider = new firebase.auth.GithubAuthProvider();
+        provider.addScope('user');
+        firebaseApp.auth().signInWithPopup(provider).then((result) => {
+            const user = result.user;
+            const userName = result.additionalUserInfo.username;
+            props.sendMachine({ type: "CONTRIBUTE", authUser: {
+                    name: userName,
+                    email: user.email,
+                    photoURL: user.photoURL
+                } 
+            });
+        });
     }
 
     const connectWithTwitter = () => {
-        const authProvider = new firebase.auth.TwitterAuthProvider();
-        firebase.auth().signInWithPopup(authProvider);
-        props.sendMachine("CONTRIBUTE");
+        const provider = new firebase.auth.Twitterprovider();
+        firebaseApp.auth().signInWithPopup(provider).then((result) => {
+            const user = result.user;
+            props.sendMachine({ type: "CONTRIBUTE", authUser: {
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL
+                } 
+            });
+        });
     }
 
     const connectWithEmail = () => {
@@ -59,11 +83,11 @@ export default function Start(props) {
                 <div style={styles.h1}> Sign in </div>
                 <div style={styles.h2}> Lorem ipsum dolor sit amet elit.</div>
                 <ConnectButton text="Sign in with Google" icon={google} action={() => connectWithGoogle()} />
-                {/* todo: need to open apps for all of the bellow logins */}
-                {/* <ConnectButton text="Sign in with Facebook" icon={facebook} action={() => connectWithFacebook()} />
+                <ConnectButton text="Sign in with Facebook" icon={facebook} action={() => connectWithFacebook()} />
                 <ConnectButton text="Sign in with Github" icon={github} action={() => connectWithGithub()} />
-                <ConnectButton text="Sign in with Twitter" icon={twitter} action={() => connectWithTwitter()} /> */}
-                <ConnectButton text="Sign in with Email" icon={email} action={() => connectWithEmail()} />
+                {/* todo: need to open apps for all of the bellow logins */}
+                {/* <ConnectButton text="Sign in with Twitter" icon={twitter} action={() => connectWithTwitter()} /> */}
+                {/* <ConnectButton text="Sign in with Email" icon={email} action={() => connectWithEmail()} /> */}
             </div>
         </div>
     );

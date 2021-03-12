@@ -53,10 +53,10 @@ export default function Skills(props) {
     useEffect(() => {
         props.animate("info");
         setShouldShowImage(true);
-        const [firstName, lastName] = props.state.context.authUser.name.split(" ");
+        const [firstName, lastName] = props.state.context.user.name.split(" ");
         setName(firstName);
         setLastName(lastName);
-        setImageSource(props.state.context.authUser.photoURL);
+        setImageSource(props.state.context.user.imageSource);
     }, []);
 
     return (

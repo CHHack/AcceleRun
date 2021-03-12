@@ -46,7 +46,7 @@ export const ADD_SKILLS_TO_PERSON_MUTATION = gql`
 `;
 
 export const ADD_IDEA = gql`
-  mutation addIdea($name: String, $goal: String, $skillsNeeded: [SkillRef!]) {
+  mutation addIdea($name: String!, $goal: String!, $skillsNeeded: [SkillRef!]) {
     addIdea(input: {name: $name, goal: $goal, skillsNeeded: $skillsNeeded}) {
       idea {
         goal
