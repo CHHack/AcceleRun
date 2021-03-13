@@ -15,11 +15,12 @@ const api = {
             }
         })
     },
-    addNewPerson: async ({ name, email }) => {
+    addNewPerson: async ({ name, email, imageSource }) => {
         return await apolloClient.mutate({
             mutation: ADD_NEW_PERSON_MUTATION, variables: {
                 name,
                 email,
+                imageSource,
                 onBoarded: false
             }
         })
@@ -31,20 +32,22 @@ const api = {
             }
         })
     },
-    addSkillToPerson: async ({ email, skills }) => {
+    addSkillToPerson: async ({ email, skills, positions }) => {
         return await apolloClient.mutate({
             mutation: ADD_SKILLS_TO_PERSON_MUTATION, variables: {
                 email,
-                skills
+                skills, 
+                positions
             }
         })
     },
-    addIdea: async ({ name, goal, skillsNeeded }) => {
+    addIdea: async ({ name, goal, skillsNeeded, categories }) => {
         return await apolloClient.mutate({
             mutation: ADD_IDEA, variables: {
                 name,
                 goal,
-                skillsNeeded
+                skillsNeeded,
+                categories
             }
         })
     }

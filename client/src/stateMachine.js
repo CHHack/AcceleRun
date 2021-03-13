@@ -15,7 +15,12 @@ const addPerson = async (context) => {
 const addPersonSkills = async (context) => {
     try {
         const mappedSkills = context.user.skills.map(skill => { return { name: skill } });
-        const user = { email: context.authUser.email, skills: mappedSkills };
+        const mappedPositions = context.user.positions.map(position => { return { name: position } });
+        const user = { 
+            email: context.user.email,
+            skills: mappedSkills,
+            positions: mappedPositions
+        };
         const result = await api.addSkillToPerson(user);
         return result;
     } catch (error) {
@@ -40,8 +45,10 @@ const addIdea = async (context) => {
             name: idea.idea,
             goal: idea.pitch,
             skillsNeeded: [
-                ...idea.teamSkills.map(skill => { return { name: skill } }),
-                ...idea.ideaCategories.map(skill => { return { name: skill } })
+                ...idea.teamSkills.map(skill => { return { name: skill } }),  
+            ],
+            categories:[
+                ...idea.ideaCategories.map(category => { return { name: category } })
             ]
         };
         
@@ -62,6 +69,7 @@ const updateOnboardingStatus = async (context) => {
 
 const haveAnIdea = (context) => context.user.contributionType ==="haveAnIdea";
 const hasOnboarded = (context) => context.user.hasOnboarded;
+const haveUser = (context) => context.user;
 
 const remoteMachine = Machine({
     id: "remote",
@@ -103,25 +111,21 @@ const rootMachine = Machine({
     initial: "loading",
     context: {
         authUser: null,
-        user: {
-            hasOnboarded: false,
-            contributionType: "haveAnIdea",
-            name: "",
-            email: "",
-            skills: null,
-            idea: null
-        }
+        user: null
     },
     states: {
         loading: {
             on: {
                 MAIN: {
                     target: "main",
-                    actions: assign({ authUser: (context, event) => event.authUser })
+                    actions: assign({ user: (context, event) => event.user })
                 },
                 LANDING: {
                     target: "landing",
-                    actions: assign({ authUser: (context, event) => event.authUser })
+                    actions: assign({ 
+                        authUser: (context, event) => event.authUser,
+                        user: (context, event) => event.user
+                    })
                 }
             }
         },
@@ -164,9 +168,17 @@ const rootMachine = Machine({
         },
         onboarding: {
             id: "onboarding",
-            initial: "connect",
+            initial: "init",
             meta: { path: "/onboarding" },
             states: {
+                init:{
+                    on: {
+                        "": [
+                            { target: "addNewUser", cond: haveUser },
+                            { target: "connect", cond: !haveUser }
+                        ]
+                    }
+                },
                 connect: {
                     on: {
                         CONTRIBUTE: {

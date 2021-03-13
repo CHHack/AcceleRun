@@ -28,38 +28,57 @@ export default function App() {
     let top = "";
     switch (step) {
       case "start":
-        left = "310px";
-        top = "235px";
+        left = "300px";
+        top = "200px";
         break;
       case "connect":
-        left = "30px";
-        top = "-270px";
+        left = "100px";
+        top = "0px";
         break;
       case "contribute":
-        left = "100px";
-        top = "-385px";
+        left = "-100px";
+        top = "-200px";
         break;
       case "info":
-        left = "150px";
-        top = "-440px";
+        left = "100px";
+        top = "-300px";
         break;
       case "idea":
-        left = "225px";
-        top = "-285px";
+      case "portal":
+        left = "300px";
+        top = "-500px";
         break;
     }
 
-    setEclipseStyle({ left: left, top: top, position: "absolute", transition: "500ms ease-in-out" })
+    setEclipseStyle({
+      left: left,
+      top: top,
+      position: "absolute",
+      opacity: step === "portal" ? 0 : 1,
+      visibility: step === "portal" ? "hidden" : "visible",
+      transition: step === "portal" ? "visibility 0s 2s, opacity 2s ease-out" : "1000ms ease-out"
+    })
   };
 
 
   firebase.auth().onAuthStateChanged(async (authUser) => {
-    if (authUser && !state.context.authUser) {
+    if ((authUser && !state.context.authUser) && !state.context.user) {
       const response = await api.getPerson(authUser.email);
-      sendMachine({ type: response?.data?.getPerson?.onBoarded ? "MAIN" : "LANDING", authUser: authUser });
+      const user = response.data.getPerson;
+      if (!user) {
+        sendMachine({ type: "LANDING", authUser: authUser, user: null });
+        return;
+      }
+
+      if (user.onBoarded) {
+        sendMachine({ type: "MAIN", user: user });
+        return;
+      }
+
+      sendMachine({ type: "LANDING", authUser: null, user: user });
     }
     else {
-      sendMachine({ type: "LANDING", authUser: authUser });
+      sendMachine({ type: "LANDING", authUser: null, user: null });
     }
   });
 
@@ -67,31 +86,15 @@ export default function App() {
   return (
     <div className="app">
 
-      {/* {
-        !state.matches("main") &&
-          <div style={eclipseStyle} >
-            <img src={eclipse} alt="logo" />
-          </div>
-      } */}
+      <div style={eclipseStyle} >
+        <img src={eclipse} alt="logo" />
+      </div>
 
       {
         state.matches("landing") ? <Landing state={state} sendMachine={sendMachine} animate={animate} /> :
           state.matches("onboarding") ? <Onboarding state={state} sendMachine={sendMachine} animate={animate} /> :
-            state.matches("main") ? <Portal /> : <Loading />
+            state.matches("main") ? <Portal animate={animate} /> : <Loading />
       }
-
-
-      {/* <Switch>
-          <Route axact path="/onboarding">
-            <Onboarding />
-          </Route>
-          <Route axact path="/portal">
-            <Portal />
-          </Route>
-          <Route axact path="/">
-            <Loading />
-          </Route>
-        </Switch> */}
     </div>
   );
 }

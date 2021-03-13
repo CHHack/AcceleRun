@@ -16,7 +16,7 @@ export default function Start(props) {
     }, []);
 
     const connectWithGoogle = () => {
-        const provider = new firebase.auth.Googleprovider();
+        const provider = new firebase.auth.GoogleAuthProvider();
         provider.addScope('profile');
         provider.addScope('email');
         firebaseApp.auth().signInWithPopup(provider).then((result) => {
