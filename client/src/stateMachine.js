@@ -1,4 +1,4 @@
-import { Machine, sendParent, send, assign, spawn } from "xstate";
+import { Machine, sendParent, send, assign, spawn, interpret } from "xstate";
 import api from "./graphql/api";
 
 const addPerson = async (context) => {
@@ -16,7 +16,7 @@ const addPersonSkills = async (context) => {
     try {
         const mappedSkills = context.user.skills.map(skill => { return { name: skill } });
         const mappedPositions = context.user.positions.map(position => { return { name: position } });
-        const user = { 
+        const user = {
             email: context.user.email,
             skills: mappedSkills,
             positions: mappedPositions
@@ -41,17 +41,17 @@ const getPerson = async (context) => {
 const addIdea = async (context) => {
     try {
         const { idea } = context.user;
-        const ideaDb = { 
+        const ideaDb = {
             name: idea.idea,
             goal: idea.pitch,
             skillsNeeded: [
-                ...idea.teamSkills.map(skill => { return { name: skill } }),  
+                ...idea.teamSkills.map(skill => { return { name: skill } }),
             ],
-            categories:[
+            categories: [
                 ...idea.ideaCategories.map(category => { return { name: category } })
             ]
         };
-        
+
         await api.addIdea(ideaDb);
     } catch (error) {
         console.log(error);
@@ -67,7 +67,16 @@ const updateOnboardingStatus = async (context) => {
     }
 };
 
-const haveAnIdea = (context) => context.user.contributionType ==="haveAnIdea";
+const loadIdeas = async (context) => {
+    try {
+        const ideas = await api.queryIdeas();
+        context.ideas = ideas.data.queryIdea;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const haveAnIdea = (context) => context.user.contributionType === "haveAnIdea";
 const hasOnboarded = (context) => context.user.hasOnboarded;
 const haveUser = (context) => context.user;
 
@@ -122,7 +131,7 @@ const rootMachine = Machine({
                 },
                 LANDING: {
                     target: "landing",
-                    actions: assign({ 
+                    actions: assign({
                         authUser: (context, event) => event.authUser,
                         user: (context, event) => event.user
                     })
@@ -169,9 +178,8 @@ const rootMachine = Machine({
         onboarding: {
             id: "onboarding",
             initial: "init",
-            meta: { path: "/onboarding" },
             states: {
-                init:{
+                init: {
                     on: {
                         "": [
                             { target: "addNewUser", cond: haveUser },
@@ -180,6 +188,7 @@ const rootMachine = Machine({
                     }
                 },
                 connect: {
+                    meta: { path: "/connect" },
                     on: {
                         CONTRIBUTE: {
                             target: "addNewUser",
@@ -188,7 +197,7 @@ const rootMachine = Machine({
                                     return {
                                         name: event.authUser.name,
                                         email: event.authUser.email,
-                                        imageSource: event.authUser.photoURL                           
+                                        imageSource: event.authUser.photoURL
                                     }
                                 }
                             })
@@ -212,6 +221,7 @@ const rootMachine = Machine({
                     type: "final"
                 },
                 contribute: {
+                    meta: { path: "/contribute" },
                     on: {
                         HAVE_AN_IDEA: {
                             target: "idea",
@@ -234,6 +244,7 @@ const rootMachine = Machine({
                     }
                 },
                 idea: {
+                    meta: { path: "/idea" },
                     on: {
                         SUBMIT: {
                             target: "addIdea",
@@ -245,6 +256,9 @@ const rootMachine = Machine({
                                 })
                             })
                         },
+                        skills: {
+                            target: "skills"
+                        }
                     }
                 },
                 addIdea: {
@@ -260,15 +274,19 @@ const rootMachine = Machine({
                     }
                 },
                 skills: {
+                    meta: { path: "/skills" },
                     on: {
                         SUBMIT: {
                             target: "addUserSkills",
-                            actions: assign({ 
+                            actions: assign({
                                 user: (context, event) => ({
                                     ...context.user,
                                     ...event.user
                                 })
                             })
+                        },
+                        contribute: {
+                            target: "contribute"
                         }
                     }
                 },
@@ -309,7 +327,7 @@ const rootMachine = Machine({
         },
         main: {
             id: "main",
-            initial: "idle",
+            initial: "loadIdeas",
             on: {
                 LOGOUT: "onboarding"
             },
@@ -317,7 +335,18 @@ const rootMachine = Machine({
                 talentWrangler: {}
             },
             states: {
-                entry: (context, event) => console.log("main"),
+                loadIdeas: {
+                    invoke: {
+                        id: 'loadIdeas',
+                        src: (context, event) => loadIdeas(context),
+                        onDone: {
+                            target: "idle",
+                        },
+                        onError: {
+                            target: "idle",
+                        }
+                    }
+                },
                 idle: {
                     on: {
                         ADD_PROJECT: "addProjectForm",

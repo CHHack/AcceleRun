@@ -1,5 +1,5 @@
 import Start from "./Onboarding/Start/Start";
-import logo from "../Assets/Images/logo.svg";
+import logo from "../assets/Images/logo.svg";
 
 export default function Landing(props) {
     return (

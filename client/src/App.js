@@ -1,29 +1,31 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useMachine } from "@xstate/react";
-import Onboarding from "./Components/Onboarding/Onboarding.js";
-import Loading from "./Components/Loading/Loading.js";
-import Portal from "./Components/Portal/Portal.js";
+import Onboarding from "./components/Onboarding/Onboarding.js";
+import Loading from "./components/Loading/Loading.js";
+import Portal from "./components/Portal/Portal.js";
+import Landing from "./components/Landing.js";
 import firebase from "./firebase.js";
 import machine from "./stateMachine.js";
-import eclipse from "./Assets/Images/eclipse.svg";
-import Landing from "./Components/Landing.js";
+import eclipse from "./assets/Images/eclipse.png";
 import api from "./graphql/api";
 import "./App.scss";
 
 export default function App() {
-  const [state, sendMachine] = useMachine(machine, { devTools: true });
+  const [state, sendMachine, service] = useMachine(machine, { devTools: true });
   const history = useHistory();
 
   let [eclipseStyle, setEclipseStyle] = useState({
     left: "310px",
     top: "235px",
+    visibility: "hidden",
     position: "absolute",
     transition: "120ms ease"
   });
 
   const animate = (step) => {
+    return;
     let left = "";
     let top = "";
     switch (step) {
@@ -60,6 +62,35 @@ export default function App() {
     })
   };
 
+  useEffect(() => {
+    window.addEventListener('hashchange', () => {
+      if (!window.location.hash) {
+        return;
+      }
+      const nextState = window.location.hash.split("/")[1];
+      sendMachine(nextState);
+    });
+  }, [])
+
+  useEffect(() => {
+    const subscription = service.subscribe((state) => {
+      if (!state.meta) {
+        return;
+      }
+
+      const mergedMeta = Object.keys(state.meta).reduce((acc, key) => {
+        const value = state.meta[key];
+        Object.assign(acc, value);
+        return acc;
+      }, {});
+
+      if (mergedMeta.path) {
+        window.location.hash = mergedMeta.path;
+      }
+    });
+
+    return subscription.unsubscribe;
+  }, [service]);
 
   firebase.auth().onAuthStateChanged(async (authUser) => {
     if ((authUser && !state.context.authUser) && !state.context.user) {
@@ -86,14 +117,12 @@ export default function App() {
   return (
     <div className="app">
 
-      <div style={eclipseStyle} >
-        <img src={eclipse} alt="logo" />
-      </div>
+      {!(state.matches("main") || state.matches("loading")) && <div className="eclipse-wrapper" />}
 
       {
         state.matches("landing") ? <Landing state={state} sendMachine={sendMachine} animate={animate} /> :
           state.matches("onboarding") ? <Onboarding state={state} sendMachine={sendMachine} animate={animate} /> :
-            state.matches("main") ? <Portal animate={animate} /> : <Loading />
+            state.matches("main.idle") ? <Portal state={state} sendMachine={sendMachine} animate={animate} /> : <Loading />
       }
     </div>
   );

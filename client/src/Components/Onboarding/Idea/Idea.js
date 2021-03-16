@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import InputV1 from '../../InputV1/InputV1';
 import TagsV1 from '../../TagsV1/TagsV1';
-import NextButton from '../../NextButton/NextButton';
+import PrimaryButton from '../../PrimaryButton/PrimaryButton';
+import SecondaryButton from '../../SecondaryButton/SecondaryButton';
 
 export default function Idea(props) {
     let [isNextButtonActive, setIsNextButtonActive] = useState(false);
@@ -20,11 +21,15 @@ export default function Idea(props) {
             type: "SUBMIT", idea: {
                 idea,
                 pitch,
-                ideaCategories : ideaCategories.map(category => category.value),
-                teamSkills : teamSkills.map(skill => skill.value),
+                ideaCategories: ideaCategories.map(category => category.value),
+                teamSkills: teamSkills.map(skill => skill.value),
             }
         });
     };
+
+    const onBackButtonClicked = () => {
+        window.location.hash = "/skills";
+    }
 
     useEffect(() => {
         const isIdeaExists = idea !== "";
@@ -45,41 +50,52 @@ export default function Idea(props) {
                 <div style={styles.h2}>What is your idea?</div>
 
                 <TagsV1
-                    title="Idea category"
-                    placeholder="Find or add your idea category"
+                    title="Choose the most appropriate category for your idea"
+                    placeholder="Find or add a category that best suits your idea"
                     options={["Tech", "Med", "DevOps"]}
                     action={onSetIdeaCategories}
                 />
 
                 <InputV1
-                    title="The Idea"
-                    placeholder="Your idea in quick title"
+                    title="Name your idea"
+                    placeholder="Name your idea in one or two words"
                     inputValue={idea}
                     setValue={onSetIdea}
                 />
 
                 <InputV1
-                    title="Pitch"
-                    placeholder="Tall us more about your idea"
+                    title="Pitch your idea"
+                    placeholder="Tell us more about what makes your idea great"
                     inputValue={pitch}
+                    type="textarea"
                     setValue={onSetPitch}
                 />
 
                 <TagsV1
-                    title="What people or skills are you looking for? "
-                    placeholder="Find or add position & skills"
+                    title="What people or skills are you looking for?"
+                    placeholder="Find or add relevant positions or skills"
                     options={["Front end", "Back end", "React"]}
                     action={onSetTeamSkills}
                 />
             </div>
 
-            <NextButton isActive={isNextButtonActive} action={() => onNextButtonClicked()} />
+            <div style={styles.buttonsWrapper}>
+                <SecondaryButton text="Back" isActive={true} action={() => onBackButtonClicked()} />
+                <PrimaryButton text="Next" isActive={isNextButtonActive} action={() => onNextButtonClicked()} />
+            </div>
         </div>
     );
 
 }
 
 const styles = {
+    buttonsWrapper: {
+        display: 'flex',
+        width: '100%',
+        height: '100px',
+        alignItems: 'flex-end',
+        justifyContent: 'flex-end',
+    },
     stepWrapper: {
         marginTop: '4%',
         marginLeft: '45%',

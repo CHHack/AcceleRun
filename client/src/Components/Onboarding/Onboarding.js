@@ -1,5 +1,5 @@
 import { useState } from "react";
-import logo from "../../Assets/Images/logo.svg";
+import logo from "../../assets/Images/logo.svg";
 
 import Start from "./Start/Start.js";
 import Connect from "./Connect/Connect.js";

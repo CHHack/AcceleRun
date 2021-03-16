@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import ImageUploader from "react-images-upload";
 import InputV1 from '../../InputV1/InputV1';
 import TagsV1 from '../../TagsV1/TagsV1';
-import NextButton from '../../NextButton/NextButton';
+import PrimaryButton from '../../PrimaryButton/PrimaryButton';
+import SecondaryButton from '../../SecondaryButton/SecondaryButton';
 import './Skills.scss';
 
 
@@ -12,13 +13,11 @@ export default function Skills(props) {
     let [shouldShowImage, setShouldShowImage] = useState(false);
     let [imageSource, setImageSource] = useState("");
     let [name, setName] = useState("");
-    let [lastName, setLastName] = useState("");
     let [positions, setPositions] = useState([]);
     let [skills, setSkills] = useState([]);
     let [uploadedPicture, setPictures] = useState([]);
 
     const onSetName = name => setName(name);
-    const onSetLastName = lastName => setLastName(lastName);
     const onSetPositions = position => setPositions(position);
     const onSetSkills = skills => setSkills(skills);
 
@@ -26,12 +25,15 @@ export default function Skills(props) {
         props.sendMachine({
             type: "SUBMIT", user: {
                 name,
-                lastName,
                 imageSource,
                 positions: positions.map(position => position.value),
                 skills: skills.map(skill => skill.value)
             }
         });
+    }
+
+    const onBackButtonClicked = () => {
+        window.location.hash = "/contribute";
     }
 
     const onImageUploaded = picture => {
@@ -44,18 +46,16 @@ export default function Skills(props) {
 
     useEffect(() => {
         const isNameExists = name !== "";
-        const isLastNameExists = lastName !== "";
         const isPositionExists = positions.length > 0;
         const isSkillsExists = skills.length > 0;
-        setIsNextButtonActive(isNameExists && isLastNameExists && isPositionExists && isSkillsExists);
-    }, [name, lastName, positions, skills]);
+        setIsNextButtonActive(isNameExists && isPositionExists && isSkillsExists);
+    }, [name, positions, skills]);
 
     useEffect(() => {
         props.animate("info");
         setShouldShowImage(true);
-        const [firstName, lastName] = props.state.context.user.name.split(" ");
-        setName(firstName);
-        setLastName(lastName);
+        const name = props.state.context.user.name;
+        setName(name);
         setImageSource(props.state.context.user.imageSource);
     }, []);
 
@@ -66,16 +66,10 @@ export default function Skills(props) {
                 <div style={styles.top}>
                     <div style={styles.topInputs}>
                         <InputV1
-                            title="Name"
-                            placeholder="Enter your first name"
+                            title="Full Name"
+                            placeholder="Enter your full name"
                             inputValue={name}
                             setValue={onSetName}
-                        />
-                        <InputV1
-                            title="Family"
-                            placeholder="Enter your last name"
-                            inputValue={lastName}
-                            setValue={onSetLastName}
                         />
                     </div>
                     <div style={styles.imageUpload}>
@@ -103,6 +97,7 @@ export default function Skills(props) {
                 </div>
 
                 <TagsV1
+                    dafaultValues={props.state.context.user.positions?.toString()}
                     title="What do you do?"
                     placeholder="Find or add your position"
                     options={["Developer", "DBA", "Designer"]}
@@ -110,6 +105,7 @@ export default function Skills(props) {
                 />
 
                 <TagsV1
+                    dafaultValues={props.state.context.user.skills?.toString()}
                     title="Where are the areas that you excel?"
                     placeholder="Find or add your skills"
                     options={["coding", "Back end", "React"]}
@@ -117,7 +113,10 @@ export default function Skills(props) {
                 />
             </div>
 
-            <NextButton isActive={isNextButtonActive} action={() => onNextButtonClicked()} />
+            <div className="buttons-wrapper">
+                <SecondaryButton text="Back" isActive={true} action={() => onBackButtonClicked()} />
+                <PrimaryButton text="Next" isActive={isNextButtonActive} action={() => onNextButtonClicked()} />
+            </div>
         </div>
     );
 
@@ -159,7 +158,8 @@ const styles = {
     },
     topInputs: {
         flexGrow: 1,
-        marginRight: '32px'
+        marginRight: '32px',
+        paddingTop: '78px'
     },
     nextButton: {
         cursor: 'pointer',

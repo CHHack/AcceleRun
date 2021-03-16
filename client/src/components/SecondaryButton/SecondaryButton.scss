@@ -1,0 +1,46 @@
+.secondary-button {
+    cursor: pointer;
+    width: 86px;
+    height: 40px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: none;
+    margin-left: 16px;
+    color: #13debe;
+    background: transparent;
+}
+
+.secondary-button:hover {
+    cursor: pointer;
+    width: 86px;
+    height: 40px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: none;
+    margin-left: 16px;
+    color: #00fff0;
+    background: rgba(0, 255, 240, 0.1);
+}
+
+.secondary-button-disabled {
+    cursor: pointer;
+    width: 86px;
+    height: 40px;
+    font-size: 16px;
+    color: #787688;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    margin-left: 16px;
+}
+
+.secondary-button.secondary-border{
+    border: 1px solid #13DEBE;
+}
+
+.secondary-button:hover.secondary-border{
+    border: 1px solid #00FFF0;
+} 
+.secondary-button-disabled.secondary-border{
+    border: 1px solid #787688;
+}

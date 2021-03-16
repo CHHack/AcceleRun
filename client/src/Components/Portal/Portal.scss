@@ -1,11 +1,89 @@
-.portal{
+.portal {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     background: #1e1a38;
-    display:flex;
+    display: flex;
     align-items: center;
+    font-family: Montserrat;
+}
+
+.content {
+    display: flex;
+    margin-left: 58px;
+    width: calc(100% - 58px);
+    flex-direction: column;
+    padding: 24px;
 }
 
 .header {
-    margin: auto;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
+    text-transform: capitalize;
+    .name {
+        color: white;
+    }
+    .title {
+        color: #00fff0;
+        font-size: 20px;
+    }
+    .subtitle {
+        margin-top: 30px;
+        color: white;
+    }
+}
+
+.nav {
+    position: fixed;
+    background: #1e1a38;
+    left: 0;
+    top: 0;
+    width: 58px;
+    height: 100vh;
+    box-shadow: -50px -44px 108px #00ffd0;
+}
+
+.masonry-with-columns {
+    margin-top: 30px;
+    columns: 4 264px;
+    grid-column-gap: 40px;
+    .masonry-brick {
+        text-align: left;
+        padding: 24px;
+        width: 150px;
+        color: white;
+        margin: 0 40px 40px 0;
+        //  display: inline-block;
+        background: #1e1a38;
+        border: 1px solid #787688;
+        box-sizing: border-box;
+        border-radius: 4px;
+        width: 100%;
+        text-align: center;
+        font-family: system-ui;
+        font-weight: 900;
+        display: inline-block;
+        .name {
+            text-align: left;
+            font-size: 20px;
+            padding-top: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #787688;
+        }
+        .goal {
+            color: #787688;
+            padding-top: 25px;
+            font-size: 16px;
+            text-align: left;
+        }
+    }
+    // @for $i from 1 through 36 {
+    //     div:nth-child(#{$i}) {
+    //         $h: (random(400) + 100) + px;
+    //         height: $h;
+    //         line-height: $h;
+    //     }
+    // }
 }

@@ -4,7 +4,8 @@ import {
     ADD_NEW_PERSON_MUTATION,
     GET_PERSON,
     ADD_SKILLS_TO_PERSON_MUTATION,
-    ADD_IDEA
+    ADD_IDEA,
+    QUERY_IDEAS
 } from './queries'
 
 const api = {
@@ -48,6 +49,13 @@ const api = {
                 goal,
                 skillsNeeded,
                 categories
+            }
+        })
+    },
+    queryIdeas: async (pageSize) => {
+        return await apolloClient.query({
+            query: QUERY_IDEAS, variables:{
+                pageSize
             }
         })
     }

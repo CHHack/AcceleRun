@@ -13,7 +13,10 @@
         background: #00000000;
         width: 100%;
     }
-
+    .area{
+        min-height: 72px;
+        margin-top: 5px;
+    }
     .input:focus {
         border-bottom: 1px solid #0af8d2;
     }

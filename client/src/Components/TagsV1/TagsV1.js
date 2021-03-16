@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react"
 import Tags from '@yaireo/tagify/dist/react.tagify';
-import search from '../../Assets/Images/Icons/search.svg'
+import search from '../../assets/Images/Icons/search.svg'
 import './TagsV1.scss'
 
 
@@ -69,7 +69,7 @@ export default function TagsV1(props) {
           style={styles.input}
           tagifyRef={tagifyRef}
           settings={settings}
-          value=""
+          value={props.dafaultValues}
           autoFocus={false}
           {...tagifyProps}
           onChange={onChange}

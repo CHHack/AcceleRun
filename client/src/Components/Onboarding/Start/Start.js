@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import image1 from "../../../Assets/Images/Home/image1.svg";
+import image1 from "../../../assets/Images/Home/image1.svg";
 
 export default function Start(props) {
 
@@ -10,8 +10,8 @@ export default function Start(props) {
     return (
         <div style={styles.step}>
             <div style={styles.content}>
-                <div style={styles.h1}>Join a team by sharing an idea or skill</div>
-                <div style={styles.h2}>Lorem ipsum dolor sit amet elit.</div>
+                <div style={styles.h1}>Start turning an idea into reality</div>
+                <div style={styles.h2}>Join a team of people just like you who want to start creating a great software product.</div>
                 <button style={styles.button} onClick={() => props.sendMachine("ONBOARDING")}>
                     <div style={styles.buttonDiv}>Start now</div>
                 </button>

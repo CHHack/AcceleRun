@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import NextButton from '../../NextButton/NextButton';
+import PrimaryButton from '../../PrimaryButton/PrimaryButton';
 import IdeaSvg from "./IdeaSvg.js";
 import SkillsSvg from "./SkillsSvg.js";
 import './Contribute.scss';
@@ -39,23 +39,25 @@ export default function Contribute(props) {
     return (
         <div style={styles.step}>
             <div style={styles.content}>
-                <div style={styles.h2}> How would you like to contribute?</div>
+                <div style={styles.h2}>I want to</div>
                 <div style={styles.buttons} className="contribute-button ">
                     <button className={ideaClass} onClick={() => setIdeaAsSelected()}>
                         <IdeaSvg fill={ideaSvgFill} />
-                        <div className="button-div">I have an idea</div>
+                        <div className="button-div">Suggest an idea</div>
                     </button>
                     <button className={skillsClass} onClick={() => setSkillsAsSelected()}>
                         <SkillsSvg fill={skillsSvgFill} />
-                        <div className="button-div">I'd like to offer my skills / I want to help</div>
+                        <div className="button-div">Offer my skills</div>
                     </button>
                 </div>
             </div>
-            <div style={styles.botton}>
-                <NextButton
+            <div className="buttons-wrapper">
+                <PrimaryButton
+                    text="Next"
                     isActive={selectedContributionType}
-                    action={() => props.sendMachine({type: "HAVE_SKILL",
-                        contributionType : selectedContributionType == "idea" ? "haveAnIdea" : "haveSkills",
+                    action={() => props.sendMachine({
+                        type: "HAVE_SKILL",
+                        contributionType: selectedContributionType == "idea" ? "haveAnIdea" : "haveSkills",
                     })} />
             </div>
         </div>

@@ -1,9 +1,9 @@
 
-import google from "../../../Assets/Images/Icons/google.svg"
-import facebook from "../../../Assets/Images/Icons/facebook.svg"
-import github from "../../../Assets/Images/Icons/github.svg"
-import twitter from "../../../Assets/Images/Icons/twitter.svg"
-import email from "../../../Assets/Images/Icons/email.svg"
+import google from "../../../assets/Images/Icons/google.svg"
+import facebook from "../../../assets/Images/Icons/facebook.svg"
+import github from "../../../assets/Images/Icons/github.svg"
+import twitter from "../../../assets/Images/Icons/twitter.svg"
+import email from "../../../assets/Images/Icons/email.svg"
 import ConnectButton from "../../ConnectButton/ConnectButton"
 import { useEffect } from "react"
 import firebaseApp from "../../../firebase.js";
@@ -21,11 +21,12 @@ export default function Start(props) {
         provider.addScope('email');
         firebaseApp.auth().signInWithPopup(provider).then((result) => {
             const user = result.user;
-            props.sendMachine({ type: "CONTRIBUTE", authUser: {
+            props.sendMachine({
+                type: "CONTRIBUTE", authUser: {
                     name: user.displayName,
                     email: user.email,
                     photoURL: user.photoURL
-                } 
+                }
             });
         });
     };
@@ -35,11 +36,12 @@ export default function Start(props) {
         // provider.addScope("pages_read_engagement");
         firebaseApp.auth().signInWithPopup(provider).then((result) => {
             const user = result.user;
-            props.sendMachine({ type: "CONTRIBUTE", authUser: {
+            props.sendMachine({
+                type: "CONTRIBUTE", authUser: {
                     name: user.displayName,
                     email: user.email,
                     photoURL: user.photoURL
-                } 
+                }
             });
         });
     }
@@ -50,11 +52,12 @@ export default function Start(props) {
         firebaseApp.auth().signInWithPopup(provider).then((result) => {
             const user = result.user;
             const userName = result.additionalUserInfo.username;
-            props.sendMachine({ type: "CONTRIBUTE", authUser: {
+            props.sendMachine({
+                type: "CONTRIBUTE", authUser: {
                     name: userName,
                     email: user.email,
                     photoURL: user.photoURL
-                } 
+                }
             });
         });
     }
@@ -63,11 +66,12 @@ export default function Start(props) {
         const provider = new firebase.auth.Twitterprovider();
         firebaseApp.auth().signInWithPopup(provider).then((result) => {
             const user = result.user;
-            props.sendMachine({ type: "CONTRIBUTE", authUser: {
+            props.sendMachine({
+                type: "CONTRIBUTE", authUser: {
                     name: user.displayName,
                     email: user.email,
                     photoURL: user.photoURL
-                } 
+                }
             });
         });
     }
@@ -80,8 +84,8 @@ export default function Start(props) {
     return (
         <div style={styles.step}>
             <div style={styles.content}>
-                <div style={styles.h1}> Sign in </div>
-                <div style={styles.h2}> Lorem ipsum dolor sit amet elit.</div>
+                <div style={styles.h1}>Sign Up</div>
+                <div style={styles.h2}>Join us for free!</div>
                 <ConnectButton text="Sign in with Google" icon={google} action={() => connectWithGoogle()} />
                 <ConnectButton text="Sign in with Facebook" icon={facebook} action={() => connectWithFacebook()} />
                 <ConnectButton text="Sign in with Github" icon={github} action={() => connectWithGithub()} />

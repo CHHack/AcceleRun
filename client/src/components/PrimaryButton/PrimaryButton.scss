@@ -1,0 +1,38 @@
+.primary-button {
+    cursor: pointer;
+    width: 86px;
+    height: 40px;
+    font-size: 16px;
+    background: #13debe;
+    border-radius: 4px;
+    border: none;
+    margin-left: 16px;
+    font-style: normal;
+    font-weight: normal;
+}
+
+.primary-button:hover {
+    cursor: pointer;
+    width: 86px;
+    height: 40px;
+    font-size: 16px;
+    background: #00fff0;
+    border-radius: 4px;
+    border: none;
+    margin-left: 16px;
+    font-style: normal;
+    font-weight: normal;
+}
+
+.primary-button-disabled {
+    cursor: pointer;
+    width: 86px;
+    height: 40px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    border: none;
+    margin-left: 16px;
+    font-style: normal;
+    font-weight: normal;
+}
