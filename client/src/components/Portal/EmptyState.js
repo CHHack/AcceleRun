@@ -1,0 +1,15 @@
+import PrimaryButton from "../PrimaryButton/PrimaryButton";
+import SecondaryButton from "../SecondaryButton/SecondaryButton";
+import "./EmptyState.scss";
+export const EmptyState = (props) => {
+	return (
+		<div className="empty-state">
+			<div className="image">
+				<img src={props.image} />
+			</div>
+			<div className="title">{props.title}</div>
+			<div className="text">{props.text}</div>
+			<div classname="buttons">{props.children}</div>
+		</div>
+	);
+};

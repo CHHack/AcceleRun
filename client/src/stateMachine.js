@@ -2,432 +2,455 @@ import { Machine, sendParent, send, assign, spawn, interpret } from "xstate";
 import api from "./graphql/api";
 
 const addPerson = async (context) => {
-    const { user } = context;
-    try {
-        const result = await api.addNewPerson({ ...user })
-        return result;
-    }
-    catch (error) {
-        console.log(error);
-    }
+	const { user } = context;
+	try {
+		const result = await api.addNewPerson({ ...user });
+		return result;
+	} catch (error) {
+		console.log(error);
+	}
 };
 
 const addPersonSkills = async (context) => {
-    try {
-        const mappedSkills = context.user.skills.map(skill => { return { name: skill } });
-        const mappedPositions = context.user.positions.map(position => { return { name: position } });
-        const user = {
-            email: context.user.email,
-            skills: mappedSkills,
-            positions: mappedPositions
-        };
-        const result = await api.addSkillToPerson(user);
-        return result;
-    } catch (error) {
-        console.log(error);
-    }
-}
+	try {
+		const mappedSkills = context.user.skills.map((skill) => {
+			return { name: skill };
+		});
+		const mappedPositions = context.user.positions.map((position) => {
+			return { name: position };
+		});
+		const user = {
+			email: context.user.email,
+			skills: mappedSkills,
+			positions: mappedPositions,
+		};
+		const result = await api.addSkillToPerson(user);
+		return result;
+	} catch (error) {
+		console.log(error);
+	}
+};
 
 const getPerson = async (context) => {
-    try {
-        const { authUser } = context;
-        const result = await api.getPerson({ ...authUser });
-        return result;
-    } catch (error) {
-        console.log(error);
-    }
+	try {
+		const { authUser } = context;
+		const result = await api.getPerson({ ...authUser });
+		return result;
+	} catch (error) {
+		console.log(error);
+	}
 };
 
 const addIdea = async (context) => {
-    try {
-        const { idea } = context.user;
-        const ideaDb = {
-            name: idea.idea,
-            goal: idea.pitch,
-            skillsNeeded: [
-                ...idea.teamSkills.map(skill => { return { name: skill } }),
-            ],
-            categories: [
-                ...idea.ideaCategories.map(category => { return { name: category } })
-            ]
-        };
+	try {
+		const { idea } = context.user;
+		const ideaDb = {
+			name: idea.idea,
+			goal: idea.pitch,
+			skillsNeeded: [
+				...idea.teamSkills.map((skill) => {
+					return { name: skill };
+				}),
+			],
+			categories: [
+				...idea.ideaCategories.map((category) => {
+					return { name: category };
+				}),
+			],
+		};
 
-        await api.addIdea(ideaDb);
-    } catch (error) {
-        console.log(error);
-    }
+		await api.addIdea(ideaDb);
+	} catch (error) {
+		console.log(error);
+	}
 };
 
 const updateOnboardingStatus = async (context) => {
-    try {
-        const { email } = context.user;
-        await api.updateUserOnboardingStatus(email);
-    } catch (error) {
-        console.log(error);
-    }
+	try {
+		const { email } = context.user;
+		await api.updateUserOnboardingStatus(email);
+	} catch (error) {
+		console.log(error);
+	}
 };
 
 const loadIdeas = async (context) => {
-    try {
-        const ideas = await api.queryIdeas();
-        context.ideas = ideas.data.queryIdea;
-    } catch (error) {
-        console.log(error);
-    }
-}
+	try {
+		const ideas = await api.queryIdeas();
+		context.ideas = ideas.data.queryIdea;
+	} catch (error) {
+		console.log(error);
+	}
+};
 
 const haveAnIdea = (context) => context.user.contributionType === "haveAnIdea";
 const hasOnboarded = (context) => context.user.hasOnboarded;
 const haveUser = (context) => context.user;
 
 const remoteMachine = Machine({
-    id: "remote",
-    initial: "offline",
-    states: {
-        offline: {
-            on: {
-                WAKE: "online"
-            }
-        },
-        online: {
-            after: {
-                3000: {
-                    actions: sendParent("POD_UPDATED")
-                }
-            }
-        }
-    }
+	id: "remote",
+	initial: "offline",
+	states: {
+		offline: {
+			on: {
+				WAKE: "online",
+			},
+		},
+		online: {
+			after: {
+				3000: {
+					actions: sendParent("POD_UPDATED"),
+				},
+			},
+		},
+	},
 });
 
 const hasOnBoardedMachine = {
-    id: "hasOnboarded",
-    context: { hasOnboarded: undefined },
-    initial: "unknown",
-    states: {
-        unknown: {
-            on: {
-                "": [
-                    { target: "#main", cond: hasOnboarded },
-                    { target: "#onboarding", cond: !hasOnboarded }
-                ]
-            }
-        }
-    }
+	id: "hasOnboarded",
+	context: { hasOnboarded: undefined },
+	initial: "unknown",
+	states: {
+		unknown: {
+			on: {
+				"": [
+					{ target: "#portal", cond: hasOnboarded },
+					{ target: "#onboarding", cond: !hasOnboarded },
+				],
+			},
+		},
+	},
 };
 
 const rootMachine = Machine({
-    id: "AcceleRun",
-    initial: "loading",
-    context: {
-        authUser: null,
-        user: null
-    },
-    states: {
-        loading: {
-            on: {
-                MAIN: {
-                    target: "main",
-                    actions: assign({ user: (context, event) => event.user })
-                },
-                LANDING: {
-                    target: "landing",
-                    actions: assign({
-                        authUser: (context, event) => event.authUser,
-                        user: (context, event) => {
-                            if(!event.user){
-                                return null;
-                            }
-                            let user = {
-                                ...event.user
-                            };
-                            if (event.user?.skills) {
-                                user.skills = event.user.skills.map(skill => skill.name);
-                            }
-                            if (event.user?.positions) {
-                                user.positions = event.user.positions.map(skill => skill.name);
-                            }
-                            return user;
-                        }
-                    })
-                }
-            }
-        },
-        landing: {
-            id: "landing",
-            initial: "home",
-            states: {
-                home: {
-                    on: {
-                        LOGIN: "login",
-                        ONBOARDING: "#onboarding"
-                    }
-                },
-                login: {
-                    invoke: {
-                        id: "authenticate-user",
-                        src: "authenticateUser",
-                        onDone: {
-                            target: "loggedIn",
-                            actions: assign({ user: (context, event) => event.data.user }),
-                        },
-                        onError: {
-                            target: "home",
-                        },
-                    },
-                },
-                failure: {
-                    type: "home",
-                },
-                loggedIn: {
-                    on: {
-                        "": [
-                            { target: "#main", cond: hasOnboarded },
-                            { target: "#onboarding", cond: !hasOnboarded }
-                        ]
-                    }
-                },
-            },
-
-        },
-        onboarding: {
-            id: "onboarding",
-            initial: "init",
-            states: {
-                init: {
-                    on: {
-                        "": [
-                            { target: "addNewUser", cond: haveUser },
-                            { target: "connect", cond: !haveUser }
-                        ]
-                    }
-                },
-                connect: {
-                    meta: { path: "/connect" },
-                    on: {
-                        CONTRIBUTE: {
-                            target: "addNewUser",
-                            actions: assign({
-                                user: (context, event) => {
-                                    return {
-                                        name: event.authUser.name,
-                                        email: event.authUser.email,
-                                        imageSource: event.authUser.photoURL
-                                    }
-                                }
-                            })
-                        }
-                    }
-                },
-                addNewUser: {
-                    invoke: {
-                        id: "addPerson",
-                        src: (context, evet) => addPerson(context),
-                        onDone: {
-                            target: "contribute",
-                            // actions: assign({ user: (context, event) => context.authUser })
-                        },
-                        onError: {
-                            target: "failure",
-                        },
-                    }
-                },
-                failure: {
-                    type: "final"
-                },
-                contribute: {
-                    meta: { path: "/contribute" },
-                    on: {
-                        HAVE_AN_IDEA: {
-                            target: "idea",
-                            actions: assign({
-                                user: (context, event) => ({
-                                    ...context.user,
-                                    contributionType: event.contributionType
-                                })
-                            })
-                        },
-                        HAVE_SKILL: {
-                            target: "skills",
-                            actions: assign({
-                                user: (context, event) => ({
-                                    ...context.user,
-                                    contributionType: event.contributionType
-                                })
-                            })
-                        }
-                    }
-                },
-                idea: {
-                    meta: { path: "/idea" },
-                    on: {
-                        SUBMIT: {
-                            target: "addIdea",
-                            actions: assign({
-                                user: (context, event) => ({
-                                    ...context.user,
-                                    idea: event.idea,
-                                    hasOnboarded: true
-                                })
-                            })
-                        },
-                        skills: {
-                            target: "skills"
-                        }
-                    }
-                },
-                addIdea: {
-                    invoke: {
-                        id: "addIdea",
-                        src: (context, evet) => addIdea(context),
-                        onDone: {
-                            target: "#postOnBoarding",
-                        },
-                        onError: {
-                            target: "failure",
-                        },
-                    }
-                },
-                skills: {
-                    meta: { path: "/skills" },
-                    on: {
-                        SUBMIT: {
-                            target: "addUserSkills",
-                            actions: assign({
-                                user: (context, event) => ({
-                                    ...context.user,
-                                    ...event.user
-                                })
-                            })
-                        },
-                        contribute: {
-                            target: "contribute"
-                        }
-                    }
-                },
-                addUserSkills: {
-                    invoke: {
-                        id: "addUserSkills",
-                        src: (context, evet) => addPersonSkills(context),
-                        onDone: {
-                            target: "skillFormComplete",
-                        },
-                        onError: {
-                            target: "failure",
-                        },
-                    }
-                },
-                skillFormComplete: {
-                    on: {
-                        "": [
-                            { target: "idea", cond: haveAnIdea },
-                            { target: "#postOnBoarding", cond: !haveAnIdea }
-                        ]
-                    }
-                }
-            }
-        },
-        postOnBoarding: {
-            id: "postOnBoarding",
-            invoke: {
-                id: "update-user-onboarding-status",
-                src: (context, event) => updateOnboardingStatus(context),
-                onDone: {
-                    target: "#main"
-                },
-                onError: {
-                    target: "#onboarding",
-                },
-            },
-        },
-        main: {
-            id: "main",
-            initial: "loadIdeas",
-            on: {
-                LOGOUT: "onboarding"
-            },
-            context: {
-                talentWrangler: {}
-            },
-            states: {
-                loadIdeas: {
-                    invoke: {
-                        id: 'loadIdeas',
-                        src: (context, event) => loadIdeas(context),
-                        onDone: {
-                            target: "idle",
-                        },
-                        onError: {
-                            target: "idle",
-                        }
-                    }
-                },
-                idle: {
-                    // meta: { path: "/portal" },
-                    on: {
-                        ADD_PROJECT: "addProjectForm",
-                        PROJECT_CLICK: "projectView",
-                        //A pod will automatically form by the system
-                        POD_ADDED: "podAdded",
-                        POD_UPDATED: "podUpdated",
-                    }
-                },
-                addProjectForm: {
-                    on: {
-                        SUBMIT: "projectAdded"
-                    }
-                },
-                projectAdded: {
-                    entry: assign({
-                        talentWrangler: () => spawn(remoteMachine)
-                    }),
-                    on: {
-                        actions: send("WAKE", {
-                            to: (context) => context.talentWrangler
-                        }),
-                        "": "#main",
-                        POD_ADDED: "podAdded",
-                        POD_UPDATED: "podUpdated",
-                    }
-                },
-                podAdded: {
-                    // entry: podAddedNotification,
-                    type: "final"
-
-                },
-                podUpdated: {
-                    // entry: podUpdatedNotification
-                    type: "final"
-                },
-                projectView: {
-                    id: "projectView",
-                    initial: "idle",
-                    on: {
-                        POD_ADDED: "podAdded",
-                        POD_UPDATED: "podUpdated",
-                    },
-                    states: {
-                        idle: {
-                            on: {
-                                ADD_ASSET: "addAssetForm",
-                                ASSET_ADDED: "assetAdded"
-                            },
-                        },
-                        addAssetForm: {
-                            on: {
-                                SUBMIT: {
-                                    target: "#projectView"
-                                }
-                            }
-                        },
-                        assetAdded: {
-                            // entry: assetAddedNotification
-                            type: "final"
-                        },
-                    }
-                },
-            }
-        }
-    }
+	id: "AcceleRun",
+	initial: "loading",
+	context: {
+		authUser: null,
+		user: null,
+	},
+	states: {
+		loading: {
+			on: {
+				MAIN: {
+					target: "portal",
+					actions: assign({ user: (context, event) => event.user }),
+				},
+				LANDING: {
+					target: "landing",
+					actions: assign({
+						authUser: (context, event) => event.authUser,
+						user: (context, event) => {
+							if (!event.user) {
+								return null;
+							}
+							let user = {
+								...event.user,
+							};
+							if (event.user?.skills) {
+								user.skills = event.user.skills.map((skill) => skill.name);
+							}
+							if (event.user?.positions) {
+								user.positions = event.user.positions.map(
+									(skill) => skill.name
+								);
+							}
+							return user;
+						},
+					}),
+				},
+			},
+		},
+		landing: {
+			id: "landing",
+			initial: "home",
+			states: {
+				home: {
+					on: {
+						LOGIN: "login",
+						ONBOARDING: "#onboarding",
+					},
+				},
+				login: {
+					invoke: {
+						id: "authenticate-user",
+						src: "authenticateUser",
+						onDone: {
+							target: "loggedIn",
+							actions: assign({ user: (context, event) => event.data.user }),
+						},
+						onError: {
+							target: "home",
+						},
+					},
+				},
+				failure: {
+					type: "home",
+				},
+				loggedIn: {
+					on: {
+						"": [
+							{ target: "#portal", cond: hasOnboarded },
+							{ target: "#onboarding", cond: !hasOnboarded },
+						],
+					},
+				},
+			},
+		},
+		onboarding: {
+			id: "onboarding",
+			initial: "init",
+			states: {
+				init: {
+					on: {
+						"": [
+							{ target: "addNewUser", cond: haveUser },
+							{ target: "connect", cond: !haveUser },
+						],
+					},
+				},
+				connect: {
+					meta: { path: "/connect" },
+					on: {
+						CONTRIBUTE: {
+							target: "addNewUser",
+							actions: assign({
+								user: (context, event) => {
+									return {
+										name: event.authUser.name,
+										email: event.authUser.email,
+										imageSource: event.authUser.photoURL,
+									};
+								},
+							}),
+						},
+					},
+				},
+				addNewUser: {
+					invoke: {
+						id: "addPerson",
+						src: (context, evet) => addPerson(context),
+						onDone: {
+							target: "contribute",
+							// actions: assign({ user: (context, event) => context.authUser })
+						},
+						onError: {
+							target: "failure",
+						},
+					},
+				},
+				failure: {
+					type: "final",
+				},
+				contribute: {
+					meta: { path: "/contribute" },
+					on: {
+						HAVE_AN_IDEA: {
+							target: "idea",
+							actions: assign({
+								user: (context, event) => ({
+									...context.user,
+									contributionType: event.contributionType,
+								}),
+							}),
+						},
+						HAVE_SKILL: {
+							target: "skills",
+							actions: assign({
+								user: (context, event) => ({
+									...context.user,
+									contributionType: event.contributionType,
+								}),
+							}),
+						},
+					},
+				},
+				idea: {
+					meta: { path: "/idea" },
+					on: {
+						SUBMIT: {
+							target: "addIdea",
+							actions: assign({
+								user: (context, event) => ({
+									...context.user,
+									idea: event.idea,
+									hasOnboarded: true,
+								}),
+							}),
+						},
+						skills: {
+							target: "skills",
+						},
+					},
+				},
+				addIdea: {
+					invoke: {
+						id: "addIdea",
+						src: (context, evet) => addIdea(context),
+						onDone: {
+							target: "#postOnBoarding",
+						},
+						onError: {
+							target: "failure",
+						},
+					},
+				},
+				skills: {
+					meta: { path: "/skills" },
+					on: {
+						SUBMIT: {
+							target: "addUserSkills",
+							actions: assign({
+								user: (context, event) => ({
+									...context.user,
+									...event.user,
+								}),
+							}),
+						},
+						contribute: {
+							target: "contribute",
+						},
+					},
+				},
+				addUserSkills: {
+					invoke: {
+						id: "addUserSkills",
+						src: (context, evet) => addPersonSkills(context),
+						onDone: {
+							target: "skillFormComplete",
+						},
+						onError: {
+							target: "failure",
+						},
+					},
+				},
+				skillFormComplete: {
+					on: {
+						"": [
+							{ target: "idea", cond: haveAnIdea },
+							{ target: "#postOnBoarding", cond: !haveAnIdea },
+						],
+					},
+				},
+			},
+		},
+		postOnBoarding: {
+			id: "postOnBoarding",
+			invoke: {
+				id: "update-user-onboarding-status",
+				src: (context, event) => updateOnboardingStatus(context),
+				onDone: {
+					target: "#portal",
+				},
+				onError: {
+					target: "#onboarding",
+				},
+			},
+		},
+		portal: {
+			id: "portal",
+			initial: "loadIdeas",
+			on: {
+				LOGOUT: "onboarding",
+			},
+			context: {
+				talentWrangler: {},
+			},
+			states: {
+				loadIdeas: {
+					invoke: {
+						id: "loadIdeas",
+						src: (context, event) => loadIdeas(context),
+						onDone: {
+							target: "ideas",
+						},
+						onError: {
+							target: "ideas",
+						},
+					},
+				},
+				ideas: {
+					meta: { path: "/portal" },
+					on: {
+						ADD_PROJECT: "addProjectForm",
+						PROJECT_CLICK: "projectView",
+						//A pod will automatically form by the system
+						POD_ADDED: "podAdded",
+						POD_UPDATED: "podUpdated",
+						COMMUNITY: "community",
+						SHARE: "share",
+					},
+				},
+				community: {
+					meta: { path: "/community" },
+					on: {
+						IDEAS: "ideas",
+						SHARE: "share",
+					},
+				},
+				share: {
+					meta: { path: "/share" },
+					on: {
+						IDEAS: "ideas",
+						COMMUNITY: "community",
+					},
+				},
+				addProjectForm: {
+					on: {
+						SUBMIT: "projectAdded",
+					},
+				},
+				projectAdded: {
+					entry: assign({
+						talentWrangler: () => spawn(remoteMachine),
+					}),
+					on: {
+						actions: send("WAKE", {
+							to: (context) => context.talentWrangler,
+						}),
+						"": "#portal",
+						POD_ADDED: "podAdded",
+						POD_UPDATED: "podUpdated",
+					},
+				},
+				podAdded: {
+					// entry: podAddedNotification,
+					type: "final",
+				},
+				podUpdated: {
+					// entry: podUpdatedNotification
+					type: "final",
+				},
+				projectView: {
+					id: "projectView",
+					initial: "ideas",
+					on: {
+						POD_ADDED: "podAdded",
+						POD_UPDATED: "podUpdated",
+					},
+					states: {
+						ideas: {
+							on: {
+								ADD_ASSET: "addAssetForm",
+								ASSET_ADDED: "assetAdded",
+							},
+						},
+						addAssetForm: {
+							on: {
+								SUBMIT: {
+									target: "#projectView",
+								},
+							},
+						},
+						assetAdded: {
+							// entry: assetAddedNotification
+							type: "final",
+						},
+					},
+				},
+			},
+		},
+	},
 });
 
 export default rootMachine;
