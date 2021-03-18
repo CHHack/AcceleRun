@@ -4,6 +4,7 @@ import InputV1 from '../../InputV1/InputV1';
 import TagsV1 from '../../TagsV1/TagsV1';
 import PrimaryButton from '../../PrimaryButton/PrimaryButton';
 import SecondaryButton from '../../SecondaryButton/SecondaryButton';
+import SkillsModel from "../../../assets/Models/skills";
 import './Skills.scss';
 
 
@@ -108,7 +109,7 @@ export default function Skills(props) {
                     dafaultValues={props.state.context.user.skills?.toString()}
                     title="Where are the areas that you excel?"
                     placeholder="Find or add your skills"
-                    options={["coding", "Back end", "React"]}
+                    options={SkillsModel}
                     action={onSetSkills}
                 />
             </div>

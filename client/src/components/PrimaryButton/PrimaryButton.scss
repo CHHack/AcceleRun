@@ -1,7 +1,7 @@
 .primary-button {
     cursor: pointer;
-    width: 86px;
     height: 40px;
+    
     font-size: 16px;
     background: #13debe;
     border-radius: 4px;
@@ -9,11 +9,13 @@
     margin-left: 16px;
     font-style: normal;
     font-weight: normal;
+    padding-left: 14px;
+    padding-right: 14px;
 }
 
 .primary-button:hover {
     cursor: pointer;
-    width: 86px;
+    
     height: 40px;
     font-size: 16px;
     background: #00fff0;
@@ -22,11 +24,13 @@
     margin-left: 16px;
     font-style: normal;
     font-weight: normal;
+    padding-left: 14px;
+    padding-right: 14px;
 }
 
 .primary-button-disabled {
     cursor: pointer;
-    width: 86px;
+    
     height: 40px;
     font-size: 16px;
     background: rgba(255, 255, 255, 0.15);
@@ -35,4 +39,6 @@
     margin-left: 16px;
     font-style: normal;
     font-weight: normal;
+    padding-left: 14px;
+    padding-right: 14px;
 }

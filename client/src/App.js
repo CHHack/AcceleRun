@@ -8,7 +8,6 @@ import Portal from "./components/Portal/Portal.js";
 import Landing from "./components/Landing.js";
 import firebase from "./firebase.js";
 import machine from "./stateMachine.js";
-import eclipse from "./assets/Images/eclipse.png";
 import api from "./graphql/api";
 import "./App.scss";
 
@@ -70,7 +69,7 @@ export default function App() {
       const nextState = window.location.hash.split("/")[1];
       sendMachine(nextState);
     });
-  }, [])
+  }, []);
 
   useEffect(() => {
     const subscription = service.subscribe((state) => {
@@ -116,7 +115,7 @@ export default function App() {
 
   return (
     <div className="app">
-
+      {/* <div className="state-machine">{JSON.stringify(state.context, null, 2)}</div> */}
       {!(state.matches("main") || state.matches("loading")) && <div className="eclipse-wrapper" />}
 
       {

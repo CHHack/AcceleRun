@@ -7,6 +7,7 @@ import Contribute from "./Contribute/Contribute.js";
 import Skills from "./Skills/Skills.js";
 import Idea from "./Idea/Idea.js";
 import "./Onboarding.scss";
+import SecondaryButton from "../SecondaryButton/SecondaryButton";
 
 export default function Onboarding(props) {
 
@@ -14,13 +15,19 @@ export default function Onboarding(props) {
         <div style={styles.wizard}>
             <header>
                 <img src={logo} style={styles.logo} alt="logo" />
+                {
+                    props.state.matches("onboarding.connect") && 
+                    <div className="header-buttons">
+                        <SecondaryButton hasBorder={true} isActive={true} action={() => console.log("login")} text="Log in" />
+                    </div>
+                }
             </header>
             {
                 props.state.matches("onboarding.start") ? <Start state={props.state} sendMachine={props.sendMachine} animate={props.animate} /> :
-                props.state.matches("onboarding.connect") ? <Connect state={props.state} sendMachine={props.sendMachine} animate={props.animate} /> :
-                props.state.matches("onboarding.contribute") ? <Contribute state={props.state} sendMachine={props.sendMachine} animate={props.animate} /> :
-                props.state.matches("onboarding.skills") ? <Skills state={props.state} sendMachine={props.sendMachine} animate={props.animate} /> :
-                props.state.matches("onboarding.idea") ? <Idea state={props.state} sendMachine={props.sendMachine} animate={props.animate} /> : ""
+                    props.state.matches("onboarding.connect") ? <Connect state={props.state} sendMachine={props.sendMachine} animate={props.animate} /> :
+                        props.state.matches("onboarding.contribute") ? <Contribute state={props.state} sendMachine={props.sendMachine} animate={props.animate} /> :
+                            props.state.matches("onboarding.skills") ? <Skills state={props.state} sendMachine={props.sendMachine} animate={props.animate} /> :
+                                props.state.matches("onboarding.idea") ? <Idea state={props.state} sendMachine={props.sendMachine} animate={props.animate} /> : ""
             }
 
             {/* <Switch>
@@ -49,7 +56,6 @@ const styles = {
         width: "167.67px"
     },
     wizard: {
-        width: "100%",
         height: "100vh",
         padding: "48px",
         backgroundColor: "#1E1A38",

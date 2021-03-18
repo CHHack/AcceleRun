@@ -22,6 +22,7 @@
     font-size: 16px;
     line-height: 24px;
     text-transform: capitalize;
+    position: relative;
     .name {
         color: white;
     }
@@ -32,6 +33,10 @@
     .subtitle {
         margin-top: 30px;
         color: white;
+    }
+    .header-buttons{
+        position: absolute;
+        right: 0px;
     }
 }
 
@@ -78,6 +83,10 @@
             font-size: 16px;
             text-align: left;
         }
+        .buttons {
+            display: flex;
+            margin-top: 20px;
+        }
     }
     // @for $i from 1 through 36 {
     //     div:nth-child(#{$i}) {
@@ -86,4 +95,33 @@
     //         line-height: $h;
     //     }
     // }
+}
+
+.skills {
+    display: flex;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    place-items: center;
+    flex-wrap: wrap;
+    p {
+        flex-shrink: 0;
+        margin-right: 8px;
+    }
+}
+
+.skill-pill {
+    border: 1px solid #787688;
+    box-sizing: border-box;
+    border-radius: 32px;
+    height: 24px;
+    padding-left: 12px;
+    padding-right: 12px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 22px;
+    margin-right: 8px;
 }

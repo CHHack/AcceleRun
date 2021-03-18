@@ -73,16 +73,16 @@ export const ADD_IDEA = gql`
 `;
 
 export const QUERY_IDEAS = gql`
-query queryIdea($pageSize: Int){
-  queryIdea(first: $pageSize) {
-    goal
-    name
-    skillsNeeded {
+  query queryIdea($pageSize: Int){
+    queryIdea(first: $pageSize) {
+      goal
       name
-    }
-    categories {
-      name
+      skillsNeeded {
+        name
+      }
+      categories {
+        name
+      }
     }
   }
-}
 `;

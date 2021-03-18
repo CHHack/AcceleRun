@@ -133,7 +133,21 @@ const rootMachine = Machine({
                     target: "landing",
                     actions: assign({
                         authUser: (context, event) => event.authUser,
-                        user: (context, event) => event.user
+                        user: (context, event) => {
+                            if(!event.user){
+                                return null;
+                            }
+                            let user = {
+                                ...event.user
+                            };
+                            if (event.user?.skills) {
+                                user.skills = event.user.skills.map(skill => skill.name);
+                            }
+                            if (event.user?.positions) {
+                                user.positions = event.user.positions.map(skill => skill.name);
+                            }
+                            return user;
+                        }
                     })
                 }
             }
@@ -348,6 +362,7 @@ const rootMachine = Machine({
                     }
                 },
                 idle: {
+                    // meta: { path: "/portal" },
                     on: {
                         ADD_PROJECT: "addProjectForm",
                         PROJECT_CLICK: "projectView",

@@ -1,11 +1,15 @@
 import Start from "./Onboarding/Start/Start";
 import logo from "../assets/Images/logo.svg";
-
+import SecondaryButton from "./SecondaryButton/SecondaryButton";
+import "./Landing.scss";
 export default function Landing(props) {
     return (
         <div style={styles.wizard}>
             <header>
                 <img src={logo} style={styles.logo} alt="logo" />
+                <div className="header-buttons">
+                    <SecondaryButton hasBorder={true} action={() => console.log("login")} isActive={true} text="Log in" />
+                </div>
             </header>
             <Start state={props.state} sendMachine={props.sendMachine} animate={props.animate} />
         </div>
@@ -17,7 +21,6 @@ const styles = {
         width: "167.67px"
     },
     wizard: {
-        width: "100%",
         height: "100vh",
         padding: "48px",
         backgroundColor: "#1E1A38",

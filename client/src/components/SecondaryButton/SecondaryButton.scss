@@ -1,6 +1,6 @@
 .secondary-button {
     cursor: pointer;
-    width: 86px;
+    
     height: 40px;
     font-size: 16px;
     border-radius: 4px;
@@ -8,11 +8,13 @@
     margin-left: 16px;
     color: #13debe;
     background: transparent;
+    padding-left: 14px;
+    padding-right: 14px;
 }
 
 .secondary-button:hover {
     cursor: pointer;
-    width: 86px;
+    
     height: 40px;
     font-size: 16px;
     border-radius: 4px;
@@ -20,11 +22,13 @@
     margin-left: 16px;
     color: #00fff0;
     background: rgba(0, 255, 240, 0.1);
+    padding-left: 14px;
+    padding-right: 14px;
 }
 
 .secondary-button-disabled {
     cursor: pointer;
-    width: 86px;
+    
     height: 40px;
     font-size: 16px;
     color: #787688;
@@ -32,6 +36,8 @@
     border: none;
     background: transparent;
     margin-left: 16px;
+    padding-left: 14px;
+    padding-right: 14px;
 }
 
 .secondary-button.secondary-border{
