@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useMachine } from "@xstate/react";
 import Onboarding from "./components/Onboarding/Onboarding.js";
+import Login from "./components/Login/Login.js";
 import Loading from "./components/Loading/Loading.js";
 import Portal from "./components/Portal/Portal.js";
 import Landing from "./components/Landing.js";
@@ -94,7 +95,13 @@ export default function App() {
 	}, [service]);
 
 	firebase.auth().onAuthStateChanged(async (authUser) => {
-		if (authUser && !state.context.authUser && !state.context.user) {
+
+		if(state.context?.user?.onBoarded){
+			sendMachine({ type: "MAIN", user: state.context.user });
+			return;
+		}
+
+		if (authUser && !state.context.authUser) {
 			const response = await api.getPerson(authUser.email);
 			const user = response.data.getPerson;
 			if (!user) {
@@ -116,19 +123,15 @@ export default function App() {
 	return (
 		<div className="app">
 			{/* <div className="state-machine">{JSON.stringify(state.context, null, 2)}</div> */}
-			{!(state.matches("portal") || state.matches("loading")) && (
-				<div className="eclipse-wrapper" />
-			)}
+			{!(state.matches("portal") || state.matches("loading")) && (<div className="eclipse-wrapper" />)}
 
-			{state.matches("landing") ? (
-				<Landing state={state} sendMachine={sendMachine} animate={animate} />
-			) : state.matches("onboarding") ? (
-				<Onboarding state={state} sendMachine={sendMachine} animate={animate} />
-			) : state.matches("portal") ? (
-				<Portal state={state} sendMachine={sendMachine} animate={animate} />
-			) : (
-				<Loading />
-			)}
+			{
+				state.matches("landing") ? (<Landing state={state} sendMachine={sendMachine} animate={animate} />) : 
+				state.matches("login") ? (<Login state={state} sendMachine={sendMachine} animate={animate} />) : 
+				state.matches("onboarding") ? (<Onboarding state={state} sendMachine={sendMachine} animate={animate} />) : 
+				state.matches("portal") ? (<Portal state={state} sendMachine={sendMachine} animate={animate} />) : 
+				(<Loading />)
+			}
 		</div>
 	);
 }

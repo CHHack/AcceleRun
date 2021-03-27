@@ -1,0 +1,99 @@
+.time-line-event {
+    cursor: pointer;
+    display: flex;
+    position: absolute;
+    align-items: center;
+    justify-items: center;
+    flex-direction: column;
+    bottom: 0;
+    p {
+        display: block;
+        margin-bottom: 8px;
+    }
+    .marker {
+        width: 12px;
+        height: 8px;
+        border-radius: 7px;
+    }
+    .event-content {
+        display: none;
+    }
+    .event-date {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 16px;
+        color: #00fff0;
+    }
+    .event-text {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 16px;
+        line-height: 24px;
+        color: #ffffff;
+        margin-top: 8px;
+    }
+    .event-content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px;
+        border: 1px solid #00fff0;
+        box-sizing: border-box;
+        box-shadow: 24px 16px 80px rgba(0, 255, 208, 0.2);
+        border-radius: 0px 4px 4px 4px;
+        position: absolute;
+        top: 60px;
+        left: 34px;
+        min-width: 200px;
+    }
+    &.regular {
+        color: #787688;
+        .marker {
+            background-color: #787688;
+        }
+        .event-content {
+            display: none;
+        }
+    }
+    
+    &.next {
+        color: #ffffff;
+        .marker {
+            background-color: #787688;
+        }
+        .event-content {
+            display: none;
+        }
+    }
+    
+    &.regular:hover,
+    &.next:hover {
+        color: #ffffff;
+        .marker {
+            background-color: #ffffff;
+        }
+        .event-content {
+            display: flex;
+            background: #1e1a38;
+        }
+    }
+    
+    &.active {
+        color: #ffffff;
+        .marker {
+            background: #00fff0;
+        }
+        .event-content {
+            display: none;
+        }
+    }
+    
+    &.active:hover {
+        .event-content {
+            display: flex;
+            background: rgba(22, 93, 108, 0.95);
+        }
+    }
+}
+

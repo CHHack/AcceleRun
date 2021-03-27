@@ -4,8 +4,9 @@ import api from "./graphql/api";
 const addPerson = async (context) => {
 	const { user } = context;
 	try {
-		const result = await api.addNewPerson({ ...user });
-		return result;
+		if (user.onBoarded === undefined) {
+			return await api.addNewPerson({ ...user });
+		}
 	} catch (error) {
 		console.log(error);
 	}
@@ -41,6 +42,32 @@ const getPerson = async (context) => {
 	}
 };
 
+const addPersonToPod = async (context) => {
+	try {
+		const { user, selectedPod } = context;
+		const res = await api.addPersonToPod(selectedPod.name, { email: user.email, name: user.name });
+		return res.data.updatePod.pod;
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+const addChatBubble = async (context, event) => {
+	if (!context.chatBubble) {
+		return;
+	}
+	const res = await api.addChatBubbleToPod(context.user.pod.name, [context.chatBubble]);
+	return res.data.updatePod.pod;
+}
+
+const addAsset = async (context, event) => {
+	if (!context.asset) {
+		return;
+	}
+	const res = await api.addAssetToPod(context.user.pod.name, [context.asset]);
+	return res.data.updatePod.pod;
+}
+
 const addIdea = async (context) => {
 	try {
 		const { idea } = context.user;
@@ -59,7 +86,7 @@ const addIdea = async (context) => {
 			],
 		};
 
-		await api.addIdea(ideaDb);
+		await api.addPod(idea.idea, ideaDb, new Date().toISOString());
 	} catch (error) {
 		console.log(error);
 	}
@@ -68,24 +95,26 @@ const addIdea = async (context) => {
 const updateOnboardingStatus = async (context) => {
 	try {
 		const { email } = context.user;
-		await api.updateUserOnboardingStatus(email);
+		const res = await api.updateUserOnboardingStatus(email);
+		return res;
 	} catch (error) {
 		console.log(error);
 	}
 };
 
-const loadIdeas = async (context) => {
+const loadPods = async (context) => {
 	try {
-		const ideas = await api.queryIdeas();
-		context.ideas = ideas.data.queryIdea;
+		const pods = await api.queryPods();
+		context.pods = pods.data.queryPod;
 	} catch (error) {
 		console.log(error);
 	}
 };
 
 const haveAnIdea = (context) => context.user.contributionType === "haveAnIdea";
-const hasOnboarded = (context) => context.user.hasOnboarded;
+const onBoarded = (context) => context.user.onboarded;
 const haveUser = (context) => context.user;
+const userInAPod = (context) => context.user.pod;
 
 const remoteMachine = Machine({
 	id: "remote",
@@ -105,22 +134,6 @@ const remoteMachine = Machine({
 		},
 	},
 });
-
-const hasOnBoardedMachine = {
-	id: "hasOnboarded",
-	context: { hasOnboarded: undefined },
-	initial: "unknown",
-	states: {
-		unknown: {
-			on: {
-				"": [
-					{ target: "#portal", cond: hasOnboarded },
-					{ target: "#onboarding", cond: !hasOnboarded },
-				],
-			},
-		},
-	},
-};
 
 const rootMachine = Machine({
 	id: "AcceleRun",
@@ -151,9 +164,7 @@ const rootMachine = Machine({
 								user.skills = event.user.skills.map((skill) => skill.name);
 							}
 							if (event.user?.positions) {
-								user.positions = event.user.positions.map(
-									(skill) => skill.name
-								);
+								user.positions = event.user.positions.map((skill) => skill.name);
 							}
 							return user;
 						},
@@ -167,21 +178,8 @@ const rootMachine = Machine({
 			states: {
 				home: {
 					on: {
-						LOGIN: "login",
+						LOGIN: "#login",
 						ONBOARDING: "#onboarding",
-					},
-				},
-				login: {
-					invoke: {
-						id: "authenticate-user",
-						src: "authenticateUser",
-						onDone: {
-							target: "loggedIn",
-							actions: assign({ user: (context, event) => event.data.user }),
-						},
-						onError: {
-							target: "home",
-						},
 					},
 				},
 				failure: {
@@ -190,8 +188,8 @@ const rootMachine = Machine({
 				loggedIn: {
 					on: {
 						"": [
-							{ target: "#portal", cond: hasOnboarded },
-							{ target: "#onboarding", cond: !hasOnboarded },
+							{ target: "#portal", cond: onBoarded },
+							{ target: "#onboarding", cond: !onBoarded },
 						],
 					},
 				},
@@ -212,19 +210,16 @@ const rootMachine = Machine({
 				connect: {
 					meta: { path: "/connect" },
 					on: {
-						CONTRIBUTE: {
+						ONBOARDING: {
 							target: "addNewUser",
-							actions: assign({
-								user: (context, event) => {
-									return {
-										name: event.authUser.name,
-										email: event.authUser.email,
-										imageSource: event.authUser.photoURL,
-									};
-								},
-							}),
+							actions: assign({ user: (context, event) => event.user })
 						},
-					},
+						MAIN: {
+							target: "#portal",
+							actions: assign({ user: (context, event) => event.user })
+						},
+						LOGIN: "#login"
+					}
 				},
 				addNewUser: {
 					invoke: {
@@ -232,7 +227,6 @@ const rootMachine = Machine({
 						src: (context, evet) => addPerson(context),
 						onDone: {
 							target: "contribute",
-							// actions: assign({ user: (context, event) => context.authUser })
 						},
 						onError: {
 							target: "failure",
@@ -274,7 +268,7 @@ const rootMachine = Machine({
 								user: (context, event) => ({
 									...context.user,
 									idea: event.idea,
-									hasOnboarded: true,
+									onBoarded: true,
 								}),
 							}),
 						},
@@ -334,6 +328,20 @@ const rootMachine = Machine({
 				},
 			},
 		},
+		login: {
+			id: "login",
+			meta: { path: "/login" },
+			on: {
+				MAIN: {
+					target: "#portal",
+					actions: assign({ user: (context, event) => event.user })
+				},
+				ONBOARDING: {
+					target: "#onboarding",
+					actions: assign({ user: (context, event) => event.user })
+				}
+			}
+		},
 		postOnBoarding: {
 			id: "postOnBoarding",
 			invoke: {
@@ -341,6 +349,13 @@ const rootMachine = Machine({
 				src: (context, event) => updateOnboardingStatus(context),
 				onDone: {
 					target: "#portal",
+					actions: assign({ 
+						user: (context, event) => {
+							let user = {...context.user};
+							user.onBoarded = true;
+							return user;
+						}
+					})
 				},
 				onError: {
 					target: "#onboarding",
@@ -349,18 +364,22 @@ const rootMachine = Machine({
 		},
 		portal: {
 			id: "portal",
-			initial: "loadIdeas",
-			on: {
-				LOGOUT: "onboarding",
-			},
-			context: {
-				talentWrangler: {},
+			initial: "init",
+			context: {			
 			},
 			states: {
-				loadIdeas: {
+				init:{
+					on: {
+						"": [
+							{ target: "pod", cond: userInAPod },
+							{ target: "loadPods", cond: !userInAPod },
+						],
+					},
+				},
+				loadPods: {
 					invoke: {
-						id: "loadIdeas",
-						src: (context, event) => loadIdeas(context),
+						id: "loadPods",
+						src: (context, event) => loadPods(context),
 						onDone: {
 							target: "ideas",
 						},
@@ -372,82 +391,119 @@ const rootMachine = Machine({
 				ideas: {
 					meta: { path: "/portal" },
 					on: {
-						ADD_PROJECT: "addProjectForm",
-						PROJECT_CLICK: "projectView",
-						//A pod will automatically form by the system
-						POD_ADDED: "podAdded",
-						POD_UPDATED: "podUpdated",
+						JOIN_POD: {
+							target: "addPersonToPod",
+							actions: assign({ selectedPod: (context, event) => event.pod })
+						},
 						COMMUNITY: "community",
+						POD:"pod",
 						SHARE: "share",
+						LANDING: "#landing"
+					},
+				},
+				addPersonToPod: {
+					invoke: {
+						id: "addPersonToPod",
+						src: (context, evet) => addPersonToPod(context),
+						onDone: {
+							target: "pod",
+							actions: assign({ 
+								user: (context, event) => {
+									let user = {...context.user};
+									user.pod = event.data[0];
+									return user;
+								}
+							})
+						},
+						onError: {
+							target: "ideas",
+						},
+					},
+				},
+				pod: {
+					meta: { path: "/pod" },
+					on: {
+						ADD_CHAT_BUBBLE:{
+							target: "addChatBubble",
+							actions: assign({chatBubble: (context, event) => event.chatBubble })
+						},
+						ADD_ASSET:{
+							target: "addAsset",
+							actions: assign({asset: (context, event) => event.asset })
+						},
+						IDEAS: "loadPods",
+						SHARE: "share",
+						COMMUNITY: "community",
+						MY_TASKS: "my_tasks"
+					},
+				},
+				addAsset: {
+					invoke: {
+						id: "addAsset",
+						src: (context, evet) => addAsset(context),
+						onDone: {
+							target: "pod",
+							actions: assign({ 
+								asset:(context, event) => "",
+								user: (context, event) => {
+									let user = {...context.user};
+									user.pod = event.data[0];
+									return user;
+								}
+							})
+						},
+						onError: {
+							target: "pod",
+						},
+					},
+				},
+				addChatBubble: {
+					invoke: {
+						id: "addChatBubble",
+						src: (context, evet) => addChatBubble(context),
+						onDone: {
+							target: "pod",
+							actions: assign({ 
+								chatBubble:(context, event) => "",
+								user: (context, event) => {
+									let user = {...context.user};
+									user.pod = event.data[0];
+									return user;
+								}
+							})
+						},
+						onError: {
+							target: "pod",
+						},
+					},
+				},
+				my_tasks: {
+					meta: { path: "/pod/my-tasks" },
+					on: {
+						IDEAS: "loadPods",
+						SHARE: "share",
+						COMMUNITY: "community",
+						POD: "pod"
 					},
 				},
 				community: {
 					meta: { path: "/community" },
 					on: {
-						IDEAS: "ideas",
+						IDEAS: "loadPods",
 						SHARE: "share",
+						POD:"pod",
+						LANDING: "#landing"
 					},
 				},
 				share: {
 					meta: { path: "/share" },
 					on: {
-						IDEAS: "ideas",
+						IDEAS: "loadPods",
 						COMMUNITY: "community",
+						POD:"pod",
+						LANDING: "#landing"
 					},
-				},
-				addProjectForm: {
-					on: {
-						SUBMIT: "projectAdded",
-					},
-				},
-				projectAdded: {
-					entry: assign({
-						talentWrangler: () => spawn(remoteMachine),
-					}),
-					on: {
-						actions: send("WAKE", {
-							to: (context) => context.talentWrangler,
-						}),
-						"": "#portal",
-						POD_ADDED: "podAdded",
-						POD_UPDATED: "podUpdated",
-					},
-				},
-				podAdded: {
-					// entry: podAddedNotification,
-					type: "final",
-				},
-				podUpdated: {
-					// entry: podUpdatedNotification
-					type: "final",
-				},
-				projectView: {
-					id: "projectView",
-					initial: "ideas",
-					on: {
-						POD_ADDED: "podAdded",
-						POD_UPDATED: "podUpdated",
-					},
-					states: {
-						ideas: {
-							on: {
-								ADD_ASSET: "addAssetForm",
-								ASSET_ADDED: "assetAdded",
-							},
-						},
-						addAssetForm: {
-							on: {
-								SUBMIT: {
-									target: "#projectView",
-								},
-							},
-						},
-						assetAdded: {
-							// entry: assetAddedNotification
-							type: "final",
-						},
-					},
-				},
+				}
 			},
 		},
 	},

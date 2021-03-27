@@ -1,0 +1,41 @@
+.link-base {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 17px;
+    cursor: pointer;
+    a {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 14px;
+        line-height: 17px;
+        color: #00fff0;
+        text-decoration: none;
+    }
+}
+
+.small {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.mid {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.link-v1 {
+    color: #ffffff;
+}
+
+.link-v1:hover {
+    color: #00fff0;
+}
+
+.link-v1-active {
+    color: #13debe;
+}
+
+.link-v1-disabled {
+    color: #787688;
+}

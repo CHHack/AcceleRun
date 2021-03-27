@@ -1,0 +1,70 @@
+.account-menu {
+    width: 200px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 5;
+    background: #1e1a38;
+    box-shadow: 24px 16px 80px rgba(0, 255, 208, 0.2);
+    .head {
+        background: #26223f;
+        padding-top: 28px;
+        height: 100px;
+        img {
+            width: 32px;
+            height: 32px;
+            margin: auto;
+            display: block;
+            border-radius: 20px;
+        }
+        h2 {
+            font-style: normal;
+            font-weight: normal;
+            font-size: 16px;
+            line-height: 24px;
+            text-align: center;
+            color: #ffffff;
+            margin-top: 8px;
+            margin-bottom: 0;
+        }
+        h3 {
+            font-style: normal;
+            font-weight: normal;
+            font-size: 12px;
+            line-height: 16px;
+            text-align: center;
+            color: #787688;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+    }
+    .button {
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
+        button {
+            display: block;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 14px;
+            line-height: 17px;
+            color: #787688;
+            height: 30px;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            text-align: left;
+        }
+        .footer {
+            border-top: 1px solid #2f2b4d;
+            margin-top: 16px;
+            padding-top: 16px;
+            button {
+                font-style: normal;
+                font-weight: normal;
+                font-size: 14px;
+                line-height: 17px;
+                color: #ffffff;
+            }
+        }
+    }
+}

@@ -1,0 +1,31 @@
+.idea-step {
+    margin-top: 4%;
+    margin-left: 45%;
+    z-index: 1;
+    position: relative;
+    width: 480px;
+    height: 600px;
+    .buttons-wrapper {
+        display: flex;
+        width: 100%;
+        height: 100px;
+        align-items: flex-end;
+        justify-content: flex-end;
+        margin-left: 58px;
+    }
+    .content {
+        width: 480px;
+    }
+    .h2 {
+        font-style: normal;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 29px;
+        color: #ffffff;
+        white-space: pre-line;
+        margin-bottom: 28px;
+    }
+    .input-v1{
+        margin-bottom: 32px;
+    }
+}

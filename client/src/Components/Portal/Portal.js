@@ -7,7 +7,9 @@ import SecondaryButton from "../SecondaryButton/SecondaryButton";
 import { EmptyState } from "./EmptyState";
 import CommunitySvg from "../../assets/Images/Portal/EmptyStates/Community.svg";
 import ShareSvg from "../../assets/Images/Portal/EmptyStates/Share.svg";
+import Pod from "./Pod/Pod";
 export default function Portal(props) {
+
 	useEffect(() => {
 		props.animate("portal");
 		const body = document.getElementsByTagName("body")[0];
@@ -19,7 +21,7 @@ export default function Portal(props) {
 			<Nav state={props.state} sendMachine={props.sendMachine} />
 			<div className="content">
 				{props.state.matches("portal.ideas") ? (
-					<div>
+					<div className="content-ideas">
 						<div className="header">
 							<div className="header-buttons">
 								<PrimaryButton
@@ -42,36 +44,38 @@ export default function Portal(props) {
 				) : props.state.matches("portal.community") ? (
 					<EmptyState
 						image={CommunitySvg}
-						title={"We're setting up our Community"}
-						text={
-							"We're setting up our Community Soon you will be able to reach out and find people with the skills you're looking for."
-						}
+						title="We're setting up our Community"
+						text="We're setting up our Community Soon you will be able to reach out and find people with the skills you're looking for."
 					>
 						<SecondaryButton
 							isActive={true}
 							hasBorder={true}
 							text="Back to home"
+							action={() => props.sendMachine("IDEAS")}
 						/>
-						<PrimaryButton isActive={true} text="Ping me when ready" />
+						{/* <PrimaryButton isActive={true} text="Ping me when ready" /> */}
 					</EmptyState>
 				) : props.state.matches("portal.share") ? (
 					<EmptyState
 						image={ShareSvg}
-						title={"AcceleShare is almost ready! "}
-						text={
-							"Become a part of a community and allow you to share and find valuable assets that can help your idea become a reality."
-						}
+						title="AcceleShare is almost ready!"
+						text="Become a part of a community and allow you to share and find valuable assets that can help your idea become a reality."			
 					>
 						<SecondaryButton
 							isActive={true}
 							hasBorder={true}
 							text="Back to home"
+							action={() => props.sendMachine("IDEAS")}
 						/>
-						<PrimaryButton isActive={true} text="Ping me when ready" />
+						{/* <PrimaryButton isActive={true} text="Ping me when ready" /> */}
 					</EmptyState>
-				) : (
-					""
-				)}
+				) : 
+				props.state.matches("portal.pod") || 
+				props.state.matches("portal.my_tasks")|| 
+				props.state.matches("portal.addChatBubble") ||
+				props.state.matches("portal.addAsset") ?
+					(<Pod state={props.state} sendMachine={props.sendMachine} />) : ""
+				}
 			</div>
 		</div>
 	);

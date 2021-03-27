@@ -4,7 +4,7 @@
     background: #1e1a38;
     display: flex;
     align-items: center;
-    font-family: Montserrat;
+    
 }
 
 .content {
@@ -12,11 +12,14 @@
     margin-left: 58px;
     width: calc(100% - 58px);
     flex-direction: column;
+}
+
+.content-ideas {
     padding: 24px;
 }
 
 .header {
-    font-family: Montserrat;
+    
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
@@ -34,7 +37,7 @@
         margin-top: 30px;
         color: white;
     }
-    .header-buttons{
+    .header-buttons {
         position: absolute;
         right: 0px;
     }
@@ -54,6 +57,13 @@
     margin-top: 30px;
     columns: 3 264px;
     grid-column-gap: 40px;
+    .masonry-brick:hover {
+        border: 1px solid #00fff0;
+        box-shadow: 24px 16px 80px rgba(0, 255, 208, 0.2);
+        .name {
+            color: #00fff0;
+        }
+    }
     .masonry-brick {
         text-align: left;
         padding: 24px;
@@ -79,13 +89,16 @@
         }
         .goal {
             color: #787688;
-            padding-top: 25px;
+            padding-top: 10px;
             font-size: 16px;
             text-align: left;
         }
         .buttons {
             display: flex;
             margin-top: 20px;
+            button:nth-child(1){
+                margin-left: 0;
+            }
         }
     }
     // @for $i from 1 through 36 {
@@ -99,7 +112,7 @@
 
 .skills {
     display: flex;
-    font-family: Montserrat;
+    
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
@@ -108,6 +121,26 @@
     p {
         flex-shrink: 0;
         margin-right: 8px;
+        margin-left: 8px;
+    }
+}
+
+.details {
+    display: flex;
+    
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    place-items: center;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    div {
+        display: flex;
+    }
+    p {
+        flex-shrink: 0;
+        margin-right: 8px;
+        margin-left: 8px;
     }
 }
 
@@ -118,7 +151,7 @@
     height: 24px;
     padding-left: 12px;
     padding-right: 12px;
-    font-family: Montserrat;
+    
     font-style: normal;
     font-weight: normal;
     font-size: 12px;

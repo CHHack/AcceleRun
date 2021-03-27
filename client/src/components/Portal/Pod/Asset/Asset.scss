@@ -1,0 +1,92 @@
+.asset {
+    display: flex;
+    &.active {
+        .title {
+            color: #ffffff;
+        }
+        .img {
+            border: 1px solid #ffffff;
+            opacity: 1;
+        }
+    }
+    &.disabled {
+        &:hover {
+            display: flex;
+            .title {
+                color: #ffffff;
+                font-style: normal;
+                font-weight: normal;
+                font-size: 12px;
+                line-height: 16px;
+            }
+            .img {
+                width: 40px;
+                height: 40px;
+                border: 1px solid #ffffff;
+                background: #1e1a38;
+                box-sizing: border-box;
+                border-radius: 4px;
+                margin-right: 10px;
+                width: 40px;
+                display: flex;
+                padding: 7px;
+                opacity: 0.7;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+            .link-base {
+                color: #00fff0;
+                flex-grow: 1;
+            }
+        }
+        .title {
+            color: #787688;
+        }
+        .img {
+            border: 1px solid #787688;
+            opacity: 0.2;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    }
+    .title {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 16px;
+    }
+    .img {
+        width: 40px;
+        height: 40px;
+        background: #1e1a38;
+        box-sizing: border-box;
+        border-radius: 4px;
+        margin-right: 10px;
+        display: flex;
+        padding: 7px;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    .url {
+        // color: #ffffff;
+        flex-grow: 1;
+    }
+}
+
+.asset-modal-content {
+    display: flex;
+    .asset-modal-img {
+        width: 80px;
+        height: 80px;
+        border: 2px dashed #787688;
+        background: #1e1a38;
+        box-sizing: border-box;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+    .input-v1 {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column-reverse;
+    }
+}

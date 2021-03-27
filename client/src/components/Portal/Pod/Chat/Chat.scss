@@ -1,0 +1,37 @@
+.chat {
+	height: 90vh;
+	.chat-bubbles {
+		min-height: 83vh;
+	}
+}
+.chat-input {
+	position: sticky;
+	bottom: 0;
+	display: flex;
+	width: initial;
+	height: 58px;
+	padding-top: 8px;
+	textarea {
+		padding: 16px 8px 16px 16px;
+		background: #26223f;
+		border: 1px solid #787688;
+		box-sizing: border-box;
+		margin-left: 40px;
+		margin-right: 40px;
+		overflow: hidden;
+		height: 50px;
+		resize: none;
+		border-radius: 4px;
+		flex-grow: 1;
+		color: #ffffff;
+	}
+	textarea:focus {
+		color: #ffffff;
+		border: 1px solid #00fff0;
+	}
+	.send-button {
+		position: absolute;
+		right: 46px;
+		bottom: 13px;
+	}
+}

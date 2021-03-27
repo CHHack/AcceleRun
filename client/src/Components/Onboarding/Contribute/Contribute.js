@@ -37,7 +37,7 @@ export default function Contribute(props) {
     }, [ideaClass, skillsClass]);
 
     return (
-        <div style={styles.step}>
+        <div classNames="contribute-step" style={styles.step}>
             <div style={styles.content}>
                 <div style={styles.h2}>I want to</div>
                 <div style={styles.buttons} className="contribute-button ">

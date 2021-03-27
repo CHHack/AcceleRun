@@ -155,7 +155,8 @@ const styles = {
     },
     top: {
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        marginBottom:'32px'
     },
     topInputs: {
         flexGrow: 1,

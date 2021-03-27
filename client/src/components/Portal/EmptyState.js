@@ -1,5 +1,3 @@
-import PrimaryButton from "../PrimaryButton/PrimaryButton";
-import SecondaryButton from "../SecondaryButton/SecondaryButton";
 import "./EmptyState.scss";
 export const EmptyState = (props) => {
 	return (
@@ -9,7 +7,7 @@ export const EmptyState = (props) => {
 			</div>
 			<div className="title">{props.title}</div>
 			<div className="text">{props.text}</div>
-			<div classname="buttons">{props.children}</div>
+			<div className="buttons">{props.children}</div>
 		</div>
 	);
 };

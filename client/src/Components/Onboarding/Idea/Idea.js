@@ -3,6 +3,7 @@ import InputV1 from '../../InputV1/InputV1';
 import TagsV1 from '../../TagsV1/TagsV1';
 import PrimaryButton from '../../PrimaryButton/PrimaryButton';
 import SecondaryButton from '../../SecondaryButton/SecondaryButton';
+import "./Idea.scss";
 
 export default function Idea(props) {
     let [isNextButtonActive, setIsNextButtonActive] = useState(false);
@@ -44,10 +45,10 @@ export default function Idea(props) {
     }, []);
 
     return (
-        <div style={styles.stepWrapper}>
+        <div className="idea-step">
 
-            <div style={styles.content}>
-                <div style={styles.h2}>What is your idea?</div>
+            <div className="content">
+                <div className="h2">What is your idea?</div>
 
                 <TagsV1
                     title="Choose the most appropriate category for your idea"
@@ -79,7 +80,7 @@ export default function Idea(props) {
                 />
             </div>
 
-            <div style={styles.buttonsWrapper}>
+            <div className="buttons-wrapper">
                 <SecondaryButton text="Back" isActive={true} action={() => onBackButtonClicked()} />
                 <PrimaryButton text="Next" isActive={isNextButtonActive} action={() => onNextButtonClicked()} />
             </div>

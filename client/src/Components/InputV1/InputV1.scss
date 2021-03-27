@@ -1,7 +1,6 @@
 .input-v1 {
     .input {
-        color: #0af8d2;
-        font-family: Montserrat;
+        color: #0af8d2;    
         font-style: normal;
         font-weight: 400;
         font-size: 16px;
@@ -20,16 +19,13 @@
     .input:focus {
         border-bottom: 1px solid #0af8d2;
     }
-
     .input-title {
-        color: #ffffff;
-        font-family: Montserrat;
+        color: #ffffff;   
         font-style: normal;
         font-weight: 400;
         font-size: 12px;
     }
-
     .input-container {
-        margin-bottom: 32px;
+        // margin-bottom: 32px;
     }
 }

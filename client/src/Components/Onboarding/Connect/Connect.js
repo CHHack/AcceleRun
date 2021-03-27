@@ -8,6 +8,7 @@ import ConnectButton from "../../ConnectButton/ConnectButton"
 import { useEffect } from "react"
 import firebaseApp from "../../../firebase.js";
 import firebase from "firebase/app";
+import api from "../../../graphql/api.js";
 
 export default function Start(props) {
 
@@ -15,80 +16,83 @@ export default function Start(props) {
         props.animate("connect");
     }, []);
 
-    const connectWithGoogle = () => {
+    const connectWithGoogle = async () => {
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.addScope('profile');
         provider.addScope('email');
-        firebaseApp.auth().signInWithPopup(provider).then((result) => {
-            const user = result.user;
-            props.sendMachine({
-                type: "CONTRIBUTE", authUser: {
-                    name: user.displayName,
-                    email: user.email,
-                    photoURL: user.photoURL
-                }
-            });
-        });
+
+        const result = await firebaseApp.auth().signInWithPopup(provider);
+        const user = result.user;
+
+        onSignInDone(user);
     };
 
-    const connectWithFacebook = () => {
+    const connectWithFacebook = async () => {
         const provider = new firebase.auth.FacebookAuthProvider();
         // provider.addScope("pages_read_engagement");
-        firebaseApp.auth().signInWithPopup(provider).then((result) => {
-            const user = result.user;
-            props.sendMachine({
-                type: "CONTRIBUTE", authUser: {
-                    name: user.displayName,
-                    email: user.email,
-                    photoURL: user.photoURL
-                }
-            });
-        });
+        const result = await firebaseApp.auth().signInWithPopup(provider);
+        const user = result.user;
+
+        onSignInDone(user);
     }
 
-    const connectWithGithub = () => {
+    const connectWithGithub = async () => {
         const provider = new firebase.auth.GithubAuthProvider();
         provider.addScope('user');
-        firebaseApp.auth().signInWithPopup(provider).then((result) => {
-            const user = result.user;
-            const userName = result.additionalUserInfo.username;
-            props.sendMachine({
-                type: "CONTRIBUTE", authUser: {
-                    name: userName,
-                    email: user.email,
-                    photoURL: user.photoURL
-                }
-            });
-        });
+        const result = await firebaseApp.auth().signInWithPopup(provider);
+
+        const user = result.user;
+        const userName = result.additionalUserInfo.username;
+        user.displayName = userName;
+
+        onSignInDone(user);
     }
 
-    const connectWithTwitter = () => {
+    const connectWithTwitter = async () => {
         const provider = new firebase.auth.Twitterprovider();
-        firebaseApp.auth().signInWithPopup(provider).then((result) => {
-            const user = result.user;
-            props.sendMachine({
-                type: "CONTRIBUTE", authUser: {
-                    name: user.displayName,
-                    email: user.email,
-                    photoURL: user.photoURL
-                }
-            });
-        });
+        const result = firebaseApp.auth().signInWithPopup(provider);
+        const user = result.user;
+        onSignInDone(user);
     }
 
-    const connectWithEmail = () => {
-        firebase.auth().createUserWithEmailAndPassword("maor@maor.com", "password");
+    const connectWithEmail = (email, password) => {
+        firebase.auth().createUserWithEmailAndPassword(email, password);
         props.sendMachine("CONTRIBUTE");
+    }
+
+    const onSignInDone = async (user) => {
+        const dbResult = await api.getPerson(user.email);
+        const userDb = dbResult.data.getPerson;
+
+        if (userDb?.onBoarded) {
+            props.sendMachine({ type: "MAIN", user: userDb });
+        }
+        else {
+            const userToSave = userDb || { name: user.displayName, email: user.email, imageSource: user.photoURL };
+            props.sendMachine({ type: "ONBOARDING", user: userToSave });
+        }
     }
 
     return (
         <div style={styles.step}>
             <div style={styles.content}>
-                <div style={styles.h1}>Sign Up</div>
-                <div style={styles.h2}>Join us for free!</div>
-                <ConnectButton text="Sign in with Google" icon={google} action={() => connectWithGoogle()} />
-                <ConnectButton text="Sign in with Facebook" icon={facebook} action={() => connectWithFacebook()} />
-                <ConnectButton text="Sign in with Github" icon={github} action={() => connectWithGithub()} />
+                <div style={styles.h1}>{props.isSignUp ? "Sign Up" : "Sign In"}</div>
+                <div style={styles.h2}>{props.isSignUp ? " Join us for free!" : ""}</div>
+                <ConnectButton
+                    text={props.isSignUp ? "Sign Up with Google" : "Sign in with Google"}
+                    icon={google}
+                    action={() => connectWithGoogle()}
+                />
+                <ConnectButton
+                    text={props.isSignUp ? "Sign Up with Facebook" : "Sign in with Facebook"}
+                    icon={facebook}
+                    action={() => connectWithFacebook()}
+                />
+                <ConnectButton
+                    text={props.isSignUp ? "Sign Up with Github" : "Sign in with Github"}
+                    icon={github}
+                    action={() => connectWithGithub()}
+                />
                 {/* todo: need to open apps for all of the bellow logins */}
                 {/* <ConnectButton text="Sign in with Twitter" icon={twitter} action={() => connectWithTwitter()} /> */}
                 {/* <ConnectButton text="Sign in with Email" icon={email} action={() => connectWithEmail()} /> */}
