@@ -3,6 +3,8 @@ import InputV1 from '../../InputV1/InputV1';
 import TagsV1 from '../../TagsV1/TagsV1';
 import PrimaryButton from '../../PrimaryButton/PrimaryButton';
 import SecondaryButton from '../../SecondaryButton/SecondaryButton';
+import SkillsModel from "../../../assets/Models/skills";
+import CategoriesModel from "../../../assets/Models/categories";
 import "./Idea.scss";
 
 export default function Idea(props) {
@@ -53,7 +55,7 @@ export default function Idea(props) {
                 <TagsV1
                     title="Choose the most appropriate category for your idea"
                     placeholder="Find or add a category that best suits your idea"
-                    options={["Tech", "Med", "DevOps"]}
+                    options={CategoriesModel}
                     action={onSetIdeaCategories}
                 />
 
@@ -75,7 +77,7 @@ export default function Idea(props) {
                 <TagsV1
                     title="What people or skills are you looking for?"
                     placeholder="Find or add relevant positions or skills"
-                    options={["Front end", "Back end", "React"]}
+                    options={SkillsModel}
                     action={onSetTeamSkills}
                 />
             </div>

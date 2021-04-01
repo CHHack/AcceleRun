@@ -1,0 +1,2 @@
+const positions = ["Data analyst", "Marketer", "Product manager", "Developer", "Designer", "UX designer", "DevOps", "CEO", "Customer success manager", "Sales", "Finance", "Data scientist"];
+export default positions;

@@ -12,6 +12,7 @@ export const GET_PERSON = gql`
         creation_time
         members{
           imageSource
+          type
         }
         idea {
           name
@@ -22,7 +23,6 @@ export const GET_PERSON = gql`
           creation_time
           content
           person {
-            email
             imageSource
             name
           }     
@@ -36,6 +36,8 @@ export const GET_PERSON = gql`
         assets {
           type
           url
+          name
+          assetId
         }
       }
       positions {
@@ -120,10 +122,13 @@ export const QUERY_PODS = gql`
       creation_time
       members{
         imageSource
+        name
+        type
       }
       assets {
         url
         type
+        name
       }
       chat {
           title
@@ -143,6 +148,7 @@ export const QUERY_PODS = gql`
       assets {
         type
         url
+        name
       }
       idea {
         name
@@ -173,7 +179,6 @@ export const ADD_PERSON_TO_POD = gql`
           content
           title
           person {
-            email
             imageSource
             name
           }
@@ -187,6 +192,7 @@ export const ADD_PERSON_TO_POD = gql`
         assets {
           type
           url
+          name
         }
       }
     }
@@ -207,7 +213,6 @@ export const ADD_CHAT_BUBBLE_TO_POD = gql`
           content
           title
           person {
-            email
             imageSource
             name
           }
@@ -221,13 +226,14 @@ export const ADD_CHAT_BUBBLE_TO_POD = gql`
         assets {
           type
           url
+          name
         }
       }
     }
   }
 `
 
-export const ADD_ASSER_TO_POD = gql`
+export const ADD_ASSET_TO_POD = gql`
   mutation addAssetToPod($name:String, $assets: [AssetRef]) {
     updatePod(input: {filter: {name: {eq: $name}},set: {assets: $assets}}){
       pod {
@@ -241,7 +247,6 @@ export const ADD_ASSER_TO_POD = gql`
           content
           title
           person {
-            email
             imageSource
             name
           }
@@ -255,8 +260,24 @@ export const ADD_ASSER_TO_POD = gql`
         assets {
           type
           url
+          name
+          assetId
         }
       }
     }
   }
 `
+
+export const UPDATE_ASSET = gql`
+mutation updateAsset($filter: AssetFilter, $set: AssetPatch) {
+  updateAsset(input: {filter: $filter, set: $set}) {
+    numUids
+    asset {
+      name
+      assetId
+      type
+      url
+    }
+  }
+}`
+

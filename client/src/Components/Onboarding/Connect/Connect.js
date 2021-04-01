@@ -78,24 +78,36 @@ export default function Start(props) {
             <div style={styles.content}>
                 <div style={styles.h1}>{props.isSignUp ? "Sign Up" : "Sign In"}</div>
                 <div style={styles.h2}>{props.isSignUp ? " Join us for free!" : ""}</div>
+
                 <ConnectButton
                     text={props.isSignUp ? "Sign Up with Google" : "Sign in with Google"}
                     icon={google}
                     action={() => connectWithGoogle()}
                 />
                 <ConnectButton
+                    isDisabled={true}
                     text={props.isSignUp ? "Sign Up with Facebook" : "Sign in with Facebook"}
                     icon={facebook}
                     action={() => connectWithFacebook()}
                 />
                 <ConnectButton
+                    isDisabled={true}
                     text={props.isSignUp ? "Sign Up with Github" : "Sign in with Github"}
                     icon={github}
                     action={() => connectWithGithub()}
                 />
-                {/* todo: need to open apps for all of the bellow logins */}
-                {/* <ConnectButton text="Sign in with Twitter" icon={twitter} action={() => connectWithTwitter()} /> */}
-                {/* <ConnectButton text="Sign in with Email" icon={email} action={() => connectWithEmail()} /> */}
+
+                <ConnectButton
+                    isDisabled={true}
+                    text="Sign in with Twitter"
+                    icon={twitter}
+                    action={() => connectWithTwitter()} />
+                    
+                <ConnectButton
+                    isDisabled={true}
+                    text="Sign in with Email"
+                    icon={email}
+                    action={() => connectWithEmail()} />
             </div>
         </div>
     );

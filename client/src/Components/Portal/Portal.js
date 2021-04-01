@@ -35,8 +35,7 @@ export default function Portal(props) {
 							</div>
 							<div className="title">Welcome to AcceleRun!</div>
 							<div className="subtitle">
-								You welcome you join the idea that interests you the most and
-								fits to your shared skills.
+								Join the idea that interests you most 😉
 							</div>
 						</div>
 						<Ideas state={props.state} sendMachine={props.sendMachine} />
@@ -59,7 +58,7 @@ export default function Portal(props) {
 					<EmptyState
 						image={ShareSvg}
 						title="AcceleShare is almost ready!"
-						text="Become a part of a community and allow you to share and find valuable assets that can help your idea become a reality."			
+						text="Become a part of a community and allow you to share and find valuable assets that can help your idea become a reality."
 					>
 						<SecondaryButton
 							isActive={true}
@@ -69,11 +68,12 @@ export default function Portal(props) {
 						/>
 						{/* <PrimaryButton isActive={true} text="Ping me when ready" /> */}
 					</EmptyState>
-				) : 
-				props.state.matches("portal.pod") || 
-				props.state.matches("portal.my_tasks")|| 
-				props.state.matches("portal.addChatBubble") ||
-				props.state.matches("portal.addAsset") ?
+				) :
+					props.state.matches("portal.pod") ||
+					props.state.matches("portal.myTasks") ||
+					props.state.matches("portal.addChatBubble") ||
+					props.state.matches("portal.addAsset") ||
+					props.state.matches("portal.updateAsset") ?
 					(<Pod state={props.state} sendMachine={props.sendMachine} />) : ""
 				}
 			</div>

@@ -60,12 +60,23 @@ const addChatBubble = async (context, event) => {
 	return res.data.updatePod.pod;
 }
 
-const addAsset = async (context, event) => {
+const addAsset = async (context) => {
 	if (!context.asset) {
 		return;
 	}
 	const res = await api.addAssetToPod(context.user.pod.name, [context.asset]);
 	return res.data.updatePod.pod;
+}
+
+const updateAsset = async (context) => {
+	if (!context.asset) {
+		return;
+	}
+	const filter = { assetId: [context.asset.assetId] };
+	const set = { name: context.asset.name, url: context.asset.url, type: context.asset.type };
+
+	const res = await api.updateAsset(filter, set);
+	return res.data.updateAsset.asset;
 }
 
 const addIdea = async (context) => {
@@ -349,9 +360,9 @@ const rootMachine = Machine({
 				src: (context, event) => updateOnboardingStatus(context),
 				onDone: {
 					target: "#portal",
-					actions: assign({ 
+					actions: assign({
 						user: (context, event) => {
-							let user = {...context.user};
+							let user = { ...context.user };
 							user.onBoarded = true;
 							return user;
 						}
@@ -365,10 +376,10 @@ const rootMachine = Machine({
 		portal: {
 			id: "portal",
 			initial: "init",
-			context: {			
+			context: {
 			},
 			states: {
-				init:{
+				init: {
 					on: {
 						"": [
 							{ target: "pod", cond: userInAPod },
@@ -396,7 +407,7 @@ const rootMachine = Machine({
 							actions: assign({ selectedPod: (context, event) => event.pod })
 						},
 						COMMUNITY: "community",
-						POD:"pod",
+						POD: "pod",
 						SHARE: "share",
 						LANDING: "#landing"
 					},
@@ -407,9 +418,9 @@ const rootMachine = Machine({
 						src: (context, evet) => addPersonToPod(context),
 						onDone: {
 							target: "pod",
-							actions: assign({ 
+							actions: assign({
 								user: (context, event) => {
-									let user = {...context.user};
+									let user = { ...context.user };
 									user.pod = event.data[0];
 									return user;
 								}
@@ -423,18 +434,22 @@ const rootMachine = Machine({
 				pod: {
 					meta: { path: "/pod" },
 					on: {
-						ADD_CHAT_BUBBLE:{
+						ADD_CHAT_BUBBLE: {
 							target: "addChatBubble",
-							actions: assign({chatBubble: (context, event) => event.chatBubble })
+							actions: assign({ chatBubble: (context, event) => event.chatBubble })
 						},
-						ADD_ASSET:{
+						ADD_ASSET: {
 							target: "addAsset",
-							actions: assign({asset: (context, event) => event.asset })
+							actions: assign({ asset: (context, event) => event.asset })
+						},
+						UPDATE_ASSET: {
+							target: "updateAsset",
+							actions: assign({ asset: (context, event) => event.asset })
 						},
 						IDEAS: "loadPods",
 						SHARE: "share",
 						COMMUNITY: "community",
-						MY_TASKS: "my_tasks"
+						MY_TASKS: "myTasks"
 					},
 				},
 				addAsset: {
@@ -443,11 +458,35 @@ const rootMachine = Machine({
 						src: (context, evet) => addAsset(context),
 						onDone: {
 							target: "pod",
-							actions: assign({ 
-								asset:(context, event) => "",
+							actions: assign({
+								asset: (context, event) => "",
 								user: (context, event) => {
-									let user = {...context.user};
+									let user = { ...context.user };
 									user.pod = event.data[0];
+									return user;
+								}
+							})
+						},
+						onError: {
+							target: "pod",
+						},
+					},
+				},
+				updateAsset: {
+					invoke: {
+						id: "updateAsset",
+						src: (context, evet) => updateAsset(context),
+						onDone: {
+							target: "pod",
+							actions: assign({
+								asset: (context, event) => "",
+								user: (context, event) => {
+									let user = { ...context.user };
+									let pod = { ...user.pod };
+									let assets = [...user.pod.assets];
+
+									user.pod = pod;
+									user.pod.assets = assets.map((item) => { return item.assetId === event.data[0].assetId ? event.data[0] : item });
 									return user;
 								}
 							})
@@ -463,10 +502,10 @@ const rootMachine = Machine({
 						src: (context, evet) => addChatBubble(context),
 						onDone: {
 							target: "pod",
-							actions: assign({ 
-								chatBubble:(context, event) => "",
+							actions: assign({
+								chatBubble: (context, event) => "",
 								user: (context, event) => {
-									let user = {...context.user};
+									let user = { ...context.user };
 									user.pod = event.data[0];
 									return user;
 								}
@@ -477,7 +516,7 @@ const rootMachine = Machine({
 						},
 					},
 				},
-				my_tasks: {
+				myTasks: {
 					meta: { path: "/pod/my-tasks" },
 					on: {
 						IDEAS: "loadPods",
@@ -491,7 +530,7 @@ const rootMachine = Machine({
 					on: {
 						IDEAS: "loadPods",
 						SHARE: "share",
-						POD:"pod",
+						POD: "pod",
 						LANDING: "#landing"
 					},
 				},
@@ -500,7 +539,7 @@ const rootMachine = Machine({
 					on: {
 						IDEAS: "loadPods",
 						COMMUNITY: "community",
-						POD:"pod",
+						POD: "pod",
 						LANDING: "#landing"
 					},
 				}

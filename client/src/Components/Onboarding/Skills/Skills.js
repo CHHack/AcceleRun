@@ -5,6 +5,7 @@ import TagsV1 from '../../TagsV1/TagsV1';
 import PrimaryButton from '../../PrimaryButton/PrimaryButton';
 import SecondaryButton from '../../SecondaryButton/SecondaryButton';
 import SkillsModel from "../../../assets/Models/skills";
+import PositionsModel from "../../../assets/Models/positions";
 import './Skills.scss';
 
 
@@ -13,9 +14,9 @@ export default function Skills(props) {
     let [isNextButtonActive, setIsNextButtonActive] = useState(false);
     let [shouldShowImage, setShouldShowImage] = useState(false);
     let [imageSource, setImageSource] = useState("");
-    let [name, setName] = useState("");
-    let [positions, setPositions] = useState([]);
-    let [skills, setSkills] = useState([]);
+    let [name, setName] = useState(props.state.context.user.name);
+    let [positions, setPositions] = useState(props.state.context.user.positions || []);
+    let [skills, setSkills] = useState(props.state.context.user.skills || []);
     let [uploadedPicture, setPictures] = useState([]);
 
     const onSetName = name => setName(name);
@@ -100,15 +101,15 @@ export default function Skills(props) {
                 <TagsV1
                     dafaultValues={props.state.context.user.positions?.toString()}
                     title="What do you do?"
-                    placeholder="Find or add your position"
-                    options={["Developer", "DBA", "Designer"]}
+                    placeholder={"Find or add your position"}
+                    options={PositionsModel}
                     action={onSetPositions}
                 />
 
                 <TagsV1
                     dafaultValues={props.state.context.user.skills?.toString()}
                     title="Where are the areas that you excel?"
-                    placeholder="Find or add your skills"
+                    placeholder={"Find or add your skills"}
                     options={SkillsModel}
                     action={onSetSkills}
                 />

@@ -7,7 +7,8 @@ import {
     ADD_SKILLS_TO_PERSON_MUTATION,
     ADD_PERSON_TO_POD,
     ADD_CHAT_BUBBLE_TO_POD,
-    ADD_ASSER_TO_POD,
+    ADD_ASSET_TO_POD,
+    UPDATE_ASSET,
     ADD_IDEA,
     ADD_POD,
     QUERY_PODS
@@ -58,6 +59,7 @@ const api = {
         })
     },
     addPod: async (name, idea, creation_time) => {
+
         const members = [{ email: `accelebot-${name}@accelerun.co`, name: "Accelerun", type: "bot" }];
         const events = [
             { creation_time: moment().toISOString(), date: moment().toISOString(), title: "Pod created", content: "Let's do this!" },
@@ -68,13 +70,7 @@ const api = {
         ];
 
         return await apolloClient.mutate({
-            mutation: ADD_POD, variables: {
-                name,
-                idea,
-                creation_time,
-                members,
-                events
-            }
+            mutation: ADD_POD, variables: { name, idea, creation_time, members, events }
         })
     },
     addPersonToPod: async (name, person) => {
@@ -107,9 +103,17 @@ const api = {
     },
     addAssetToPod: async (name, assets) => {
         return await apolloClient.mutate({
-            mutation: ADD_ASSER_TO_POD, variables: {
+            mutation: ADD_ASSET_TO_POD, variables: {
                 name,
                 assets
+            }
+        })
+    },
+    updateAsset: async (filter, set) => {
+        return await apolloClient.mutate({
+            mutation: UPDATE_ASSET, variables: {
+                filter,
+                set
             }
         })
     },

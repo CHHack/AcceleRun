@@ -38,7 +38,7 @@ function Pod(props) {
                     />
                     <LinkV1
                         action={() => props.sendMachine("MY_TASKS")}
-                        isActive={props.state.matches("portal.my_tasks")}
+                        isActive={props.state.matches("portal.myTasks")}
                         text="My tasks"
                     />
                 </div>
@@ -46,7 +46,8 @@ function Pod(props) {
             {
                 props.state.matches("portal.pod") ||
                     props.state.matches("portal.addChatBubble") ||
-                    props.state.matches("portal.addAsset")
+                    props.state.matches("portal.addAsset") ||
+                    props.state.matches("portal.updateAsset")
                     ?
                     <div className="pod-home">
                         <div className="pod-content">
@@ -85,14 +86,21 @@ function Pod(props) {
                                         type="Trello"
                                         asset={props.state.context.user.pod.assets.find(asset => asset.type === "Trello")}
                                         sendMachine={props.sendMachine} />
-                                    {props.state.context.user.pod.assets.filter(asset => asset.type === "Asset").map(asset => {
-                                        return (<Asset
-                                            type="Asset"
-                                            asset={asset}
-                                            sendMachine={props.sendMachine} />)
-                                    })}
                                     <Asset
-                                        type="Asset"
+                                        type="Drive"
+                                        asset={props.state.context.user.pod.assets.find(asset => asset.type === "Drive")}
+                                        sendMachine={props.sendMachine} />
+                                    <Asset
+                                        type="Kumospace"
+                                        asset={props.state.context.user.pod.assets.find(asset => asset.type === "Kumospace")}
+                                        sendMachine={props.sendMachine} />
+                                    {props.state.context.user.pod.assets
+                                        .filter(asset => asset.type === "New" || asset.type === "Asset")
+                                        .map(asset => {
+                                            return (<Asset key={asset?.assetId} type="Asset" asset={asset} sendMachine={props.sendMachine} />)
+                                        })}
+                                    <Asset
+                                        type="New"
                                         asset={props.state.context.user.pod.assets.find(asset => asset.type === "Other")}
                                         sendMachine={props.sendMachine} />
                                 </div>
@@ -102,7 +110,7 @@ function Pod(props) {
                             <h1>Your team</h1>
                             <div className="team-members">
                                 <div className="team-member">
-                                    {props.state.context.user.pod.members.map(member => {
+                                    {props.state.context.user.pod.members.filter(member => member.type !== "bot").map(member => {
                                         return (<img src={member.imageSource} />)
                                     })}
                                 </div>

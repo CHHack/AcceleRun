@@ -31,7 +31,7 @@ export const Nav = (props) => {
 					podIconText &&
 					<div
 						onClick={() => props.sendMachine("POD")}
-						className={`pod-icon ${props.state.matches("portal.pod") || props.state.matches("portal.my_tasks") ? "neon-green" : "gray"}`}>
+						className={`pod-icon ${props.state.matches("portal.pod") || props.state.matches("portal.myTasks") ? "neon-green" : "gray"}`}>
 						{podIconText}
 					</div>
 				}

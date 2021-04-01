@@ -33,7 +33,8 @@ export default function TagsV1(props) {
     //backspace: "edit",
     placeholder: props.placeholder,
     dropdown: {
-      enabled: 0
+      enabled: 0,
+      maxItems: 100
     }
   }
 
@@ -54,6 +55,9 @@ export default function TagsV1(props) {
 
   const onChange = useCallback((e) => {
     e.persist();
+    if (!e.target?.value) {
+      return;
+    }
     props.action(JSON.parse(e.target.value));
   }, [])
 
@@ -104,12 +108,12 @@ const styles = {
   inputContainer: {
     marginBottom: '32px'
   },
-  inputWrapper:{
-    position:'relative'
+  inputWrapper: {
+    position: 'relative'
   },
   icon: {
     position: 'absolute',
     left: '0px',
-    top:'12px'
+    top: '12px'
   }
 };

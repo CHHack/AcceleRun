@@ -1,6 +1,6 @@
-.connect-button{
+.connect-button {
     .button {
-        background: #1E1A38;
+        background: #1e1a38;
         border: 2px solid rgba(255, 255, 255, 0.1);
         box-sizing: border-box;
         border-radius: 4px;
@@ -9,26 +9,47 @@
         margin-bottom: 16px;
         cursor: pointer;
     }
-
     .button:hover {
         box-shadow: 24px 16px 80px #00ffd033;
-        border: 2px solid #0AF8D2;
+        border: 2px solid #0af8d2;
     }
-
-    .button:hover > .button-div > p{
-        color:#0AF8D2;
+    .button:hover > .button-div > p {
+        color: #0af8d2;
     }
-
     .button-div {
         color: #ffffff;
-        
         font-style: normal;
         font-weight: 400;
         font-size: 16px;
         display: flex;
         justify-content: center;
     }
+    .icon {
+        margin-right: 20px;
+    }
+}
 
+.connect-button-disabled {
+    .button {
+        background: #403c56;
+        border: 2px solid #787688;
+        box-sizing: border-box;
+        border-radius: 4px;
+        width: 264px;
+        height: 56px;
+        margin-bottom: 16px;
+    }
+    .button-div {
+        color: #787688;
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        display: flex;
+        justify-content: center;
+        img {
+            filter: opacity(30%);
+        }
+    }
     .icon {
         margin-right: 20px;
     }

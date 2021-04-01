@@ -14,35 +14,64 @@
 .chat-bubble {
     margin-bottom: 24px;
     display: flex;
+    &.next-mine {
+        margin-bottom: 8px;
+    }
+    &.prev-others {
+        margin-bottom: 24px;
+    }
     .chat-bubble-text:hover {
         max-width: 495px;
         border: 1px solid #00fff0;
         box-sizing: border-box;
         box-shadow: 24px 16px 80px rgba(0, 255, 208, 0.2);
+        .top {
+            display: flex;
+            width: 100%;
+        }
         .text {
             font-style: normal;
             font-weight: normal;
             font-size: 12px;
             line-height: 16px;
-            color: #ffffff;
+            color: #c8c8c8;
+        }
+        .name {
+            text-transform: lowercase;
+            flex-grow: 1;
+        }
+        .name:first-letter {
+            text-transform: uppercase;
         }
     }
 
     .chat-bubble-text {
         max-width: 495px;
+        min-width: 240px;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         padding: 16px;
         border: 1px solid #787688;
         box-sizing: border-box;
+        .top {
+            display: flex;
+            width: 100%;
+        }
         .date,
-        .text {
+        .name {
             font-style: normal;
             font-weight: normal;
             font-size: 12px;
             line-height: 16px;
             color: #787688;
+        }
+        .text {
+            font-style: normal;
+            font-weight: normal;
+            font-size: 12px;
+            line-height: 16px;
+            color: #c8c8c8;
         }
         .title {
             font-style: normal;
@@ -50,6 +79,13 @@
             font-size: 16px;
             line-height: 24px;
             color: #ffffff;
+        }
+        .name {
+            text-transform: lowercase;
+            flex-grow: 1;
+        }
+        .name:first-letter {
+            text-transform: uppercase;
         }
     }
     .chat-bubble-image {
@@ -68,7 +104,7 @@
         border-radius: 20px;
         display: block;
         margin-right: 8px;
-        background: #787688;
+        background: #38354b;
         img {
             margin-top: 6px;
             margin-left: 3px;

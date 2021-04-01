@@ -22,7 +22,7 @@ function Modal(props) {
                     </button>
                 </div>
                 <div className="modal-content">
-                    <div className="modal-content-title">{props.subTitle}</div>
+                    {props.subTitle && <div className="modal-content-title">{props.subTitle}</div>}
                     {props.children}
                 </div>
                 <div className="modal-bottom">

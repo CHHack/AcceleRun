@@ -4,14 +4,13 @@
     background: #1e1a38;
     display: flex;
     align-items: center;
-    
-}
-
-.content {
-    display: flex;
-    margin-left: 58px;
-    width: calc(100% - 58px);
-    flex-direction: column;
+    .content {
+        display: flex;
+        margin-left: 58px;
+        min-height: 100vh;
+        width: calc(100% - 58px);
+        flex-direction: column;
+    }
 }
 
 .content-ideas {
@@ -70,7 +69,6 @@
         width: 150px;
         color: white;
         margin: 0 40px 40px 0;
-        //  display: inline-block;
         background: #1e1a38;
         border: 1px solid #787688;
         box-sizing: border-box;
@@ -101,13 +99,6 @@
             }
         }
     }
-    // @for $i from 1 through 36 {
-    //     div:nth-child(#{$i}) {
-    //         $h: (random(400) + 100) + px;
-    //         height: $h;
-    //         line-height: $h;
-    //     }
-    // }
 }
 
 .skills {
@@ -126,8 +117,7 @@
 }
 
 .details {
-    display: flex;
-    
+    display: flex; 
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
@@ -150,8 +140,7 @@
     border-radius: 32px;
     height: 24px;
     padding-left: 12px;
-    padding-right: 12px;
-    
+    padding-right: 12px; 
     font-style: normal;
     font-weight: normal;
     font-size: 12px;

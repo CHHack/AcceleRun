@@ -12,7 +12,7 @@ function TimeLineEvent(props) {
                 <div className="event-date">
                     {moment(props.date).format("MM/DD/YYYY | hh:mm")}
                 </div>
-                <div className="event-text">
+                <div className="event-title">
                     {props.title}
                 </div>
                 <div className="event-text">

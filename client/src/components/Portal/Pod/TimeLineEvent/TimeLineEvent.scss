@@ -25,13 +25,21 @@
         line-height: 16px;
         color: #00fff0;
     }
-    .event-text {
+    .event-title {
         font-style: normal;
         font-weight: normal;
         font-size: 16px;
         line-height: 24px;
         color: #ffffff;
-        margin-top: 8px;
+        margin-top: 14px;
+    }
+    .event-text {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 16px;
+        color: #ffffff;
+        margin-top: 2px;
     }
     .event-content {
         display: flex;
@@ -56,7 +64,7 @@
             display: none;
         }
     }
-    
+
     &.next {
         color: #ffffff;
         .marker {
@@ -66,7 +74,7 @@
             display: none;
         }
     }
-    
+
     &.regular:hover,
     &.next:hover {
         color: #ffffff;
@@ -78,7 +86,7 @@
             background: #1e1a38;
         }
     }
-    
+
     &.active {
         color: #ffffff;
         .marker {
@@ -88,7 +96,7 @@
             display: none;
         }
     }
-    
+
     &.active:hover {
         .event-content {
             display: flex;
@@ -96,4 +104,3 @@
         }
     }
 }
-

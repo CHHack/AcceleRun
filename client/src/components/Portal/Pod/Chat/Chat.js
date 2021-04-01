@@ -8,6 +8,25 @@ function Chat(props) {
     const [chatBubble, setChatBubble] = useState("");
     const onChange = (text) => setChatBubble(text);
 
+    const isPrevBubbleMine = (index) => {
+        if (index === 0) {
+            return false;
+        }
+
+        const prevBubble = props.state.context.user.pod.chat[index - 1];
+        return prevBubble.person.name === props.state.context.user.name;
+    };
+
+    const isNextBubbleMine = (index) => {
+        if (index + 1 === props.state.context.user.pod.chat.length) {
+            return false;
+        }
+
+        const nextBubble = props.state.context.user.pod.chat[index + 1];
+        return nextBubble.person.name === props.state.context.user.name;
+    };
+
+
     useEffect(() => {
         if (props.state.context.chatBubble === "") {
             setChatBubble("");
@@ -17,10 +36,13 @@ function Chat(props) {
     return (
         <div className="chat">
             <div className="chat-bubbles">
-                {props.state.context.user.pod.chat.map(bubble =>
+                {props.state.context.user.pod.chat.map((bubble, index) =>
                     <ChatBubble
                         key={bubble.creation_time}
-                        isMine={bubble.person.email === props.state.context.user.email}
+                        isPrevMine={isPrevBubbleMine(index)}
+                        isNextMine={isNextBubbleMine(index)}
+                        isMine={bubble.person.name === props.state.context.user.name}
+                        name={props.state.context.user.name}
                         image={bubble.person.imageSource}
                         creationTime={bubble.creation_time}
                         title={bubble.title}
