@@ -42,16 +42,6 @@ const getPerson = async (context) => {
 	}
 };
 
-const addPersonToPod = async (context) => {
-	try {
-		const { user, selectedPod } = context;
-		const res = await api.addPersonToPod(selectedPod.name, { email: user.email, name: user.name });
-		return res.data.updatePod.pod;
-	} catch (error) {
-		console.log(error);
-	}
-};
-
 const addChatBubble = async (context, event) => {
 	if (!context.chatBubble) {
 		return;
@@ -64,7 +54,7 @@ const addAsset = async (context) => {
 	if (!context.asset) {
 		return;
 	}
-	const res = await api.addAssetToPod(context.user.pod.name, [context.asset]);
+	const res = await api.addAssetToPod(context.user, context.user.pod.name, context.asset);
 	return res.data.updatePod.pod;
 }
 
@@ -81,7 +71,7 @@ const updateAsset = async (context) => {
 
 const addIdea = async (context) => {
 	try {
-		const { idea } = context.user;
+		const { idea, email, name, type } = context.user;
 		const ideaDb = {
 			name: idea.idea,
 			goal: idea.pitch,
@@ -98,6 +88,8 @@ const addIdea = async (context) => {
 		};
 
 		await api.addPod(idea.idea, ideaDb, new Date().toISOString());
+		const res = await api.addPersonToPod(idea.idea, { email: email, name: name, type: type });
+		return res.data.updatePod.pod;
 	} catch (error) {
 		console.log(error);
 	}
@@ -121,6 +113,26 @@ const loadPods = async (context) => {
 		console.log(error);
 	}
 };
+
+const addPersonToPod = async (context) => {
+	try {
+		const { user, selectedPod } = context;
+		const res = await api.addPersonToPod(selectedPod.name, { email: user.email, name: user.name, type: user.type });
+		return res.data.updatePod.pod;
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+const leavePod = async (context) => {
+	try {
+		const { user } = context;
+		const res = await api.removePersonFromPod(user.pod, { email: user.email, name: user.name, type: user.type });
+		return res.updatePod.pod;
+	} catch (error) {
+		console.log(error);
+	}
+}
 
 const haveAnIdea = (context) => context.user.contributionType === "haveAnIdea";
 const onBoarded = (context) => context.user.onboarded;
@@ -294,6 +306,13 @@ const rootMachine = Machine({
 						src: (context, evet) => addIdea(context),
 						onDone: {
 							target: "#postOnBoarding",
+							actions: assign({
+								user: (context, event) => {
+									let user = { ...context.user };
+									user.pod = event.data[0];
+									return user;
+								}
+							})
 						},
 						onError: {
 							target: "failure",
@@ -434,6 +453,10 @@ const rootMachine = Machine({
 				pod: {
 					meta: { path: "/pod" },
 					on: {
+						LEAVE_POD: {
+							target: "leavePod",
+							actions: assign({ userId: (context, event) => event.userId })
+						},
 						ADD_CHAT_BUBBLE: {
 							target: "addChatBubble",
 							actions: assign({ chatBubble: (context, event) => event.chatBubble })
@@ -450,6 +473,26 @@ const rootMachine = Machine({
 						SHARE: "share",
 						COMMUNITY: "community",
 						MY_TASKS: "myTasks"
+					},
+				},
+				leavePod: {
+					invoke: {
+						id: "leavePod",
+						src: (context, evet) => leavePod(context),
+						onDone: {
+							target: "loadPods",
+							actions: assign({
+								userId: (context, event) => null,
+								user: (context, event) => {
+									let user = { ...context.user };
+									user.pod = null;
+									return user;
+								}
+							})
+						},
+						onError: {
+							target: "pod",
+						},
 					},
 				},
 				addAsset: {

@@ -24,11 +24,11 @@ export default function Portal(props) {
 					<div className="content-ideas">
 						<div className="header">
 							<div className="header-buttons">
-								<PrimaryButton
+								{/* <PrimaryButton
 									isActive={true}
 									action={() => console.log("add new idea")}
 									text="Add new ideas"
-								/>
+								/> */}
 							</div>
 							<div className="name">
 								Hello {props.state.context.user.name.split(" ")[0]},
@@ -44,7 +44,7 @@ export default function Portal(props) {
 					<EmptyState
 						image={CommunitySvg}
 						title="We're setting up our Community"
-						text="We're setting up our Community Soon you will be able to reach out and find people with the skills you're looking for."
+						text="Soon you'll be able to reach out and find people with the skills you're looking for."
 					>
 						<SecondaryButton
 							isActive={true}

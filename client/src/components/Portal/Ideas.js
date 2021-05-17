@@ -85,7 +85,7 @@ export default function Ideas(props) {
                             <SecondaryButton
                                 hasBorder={true}
                                 isActive={!userHasPod() || isUserInPod(pod)}
-                                text={isUserInPod(pod) ? "Go to pod" : "Join us"}
+                                text={isUserInPod(pod) ? "Go to pod" : "Join pod"}
                                 action={() => !userHasPod() ? setPod(pod) : props.sendMachine({ type: "POD" })} />
                         </div>
                     </div>

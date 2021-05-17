@@ -24,3 +24,11 @@
     bottom: 0;
     z-index: 1;
 }
+
+.tooltip {
+    background: #ffffff !important;
+    color:#1e1a38 !important;
+    text-transform: capitalize !important;
+    z-index: 100;
+    font-weight: 700;
+}

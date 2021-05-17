@@ -42,7 +42,7 @@ function Chat(props) {
                         isPrevMine={isPrevBubbleMine(index)}
                         isNextMine={isNextBubbleMine(index)}
                         isMine={bubble.person.name === props.state.context.user.name}
-                        name={props.state.context.user.name}
+                        name={bubble.person.name}
                         image={bubble.person.imageSource}
                         creationTime={bubble.creation_time}
                         title={bubble.title}

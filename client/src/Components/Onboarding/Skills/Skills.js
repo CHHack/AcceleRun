@@ -97,19 +97,19 @@ export default function Skills(props) {
                         }
                     </div>
                 </div>
-
+                {positions.length}
                 <TagsV1
                     dafaultValues={props.state.context.user.positions?.toString()}
                     title="What do you do?"
-                    placeholder={"Find or add your position"}
+                    placeholder={positions.length > 0 ? "" : "Find or add your position"}
                     options={PositionsModel}
                     action={onSetPositions}
                 />
-
+                {skills.length}
                 <TagsV1
                     dafaultValues={props.state.context.user.skills?.toString()}
-                    title="Where are the areas that you excel?"
-                    placeholder={"Find or add your skills"}
+                    title="What skills do you have to offer?"
+                    placeholder={skills.length > 0 ? "" : "Find or add your skills"}
                     options={SkillsModel}
                     action={onSetSkills}
                 />
@@ -157,7 +157,7 @@ const styles = {
     top: {
         display: 'flex',
         flexDirection: 'row',
-        marginBottom:'32px'
+        marginBottom: '32px'
     },
     topInputs: {
         flexGrow: 1,

@@ -17,13 +17,11 @@
     padding: 24px;
 }
 
-.header {
-    
+.header {  
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
     line-height: 24px;
-    text-transform: capitalize;
     position: relative;
     .name {
         color: white;
@@ -81,7 +79,6 @@
         .name {
             text-align: left;
             font-size: 20px;
-            padding-top: 16px;
             padding-bottom: 16px;
             border-bottom: 1px solid #787688;
         }

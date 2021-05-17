@@ -4,6 +4,7 @@ import TagsV1 from '../../TagsV1/TagsV1';
 import PrimaryButton from '../../PrimaryButton/PrimaryButton';
 import SecondaryButton from '../../SecondaryButton/SecondaryButton';
 import SkillsModel from "../../../assets/Models/skills";
+import PositionsModel from "../../../assets/Models/positions";
 import CategoriesModel from "../../../assets/Models/categories";
 import "./Idea.scss";
 
@@ -77,7 +78,7 @@ export default function Idea(props) {
                 <TagsV1
                     title="What people or skills are you looking for?"
                     placeholder="Find or add relevant positions or skills"
-                    options={SkillsModel}
+                    options={[...SkillsModel, ...PositionsModel]}
                     action={onSetTeamSkills}
                 />
             </div>

@@ -5,8 +5,8 @@ function LinkV1(props) {
     return (
         <div
             className={`link-base 
-                        ${props.size === "s" ? "small" : "mid"} 
-                        ${props.isDisabled ? "link-v1-disabled" : props.isActive ? "link-v1-active" : "link-v1"}`}
+                    ${props.size === "s" ? "small" : "mid"} 
+                    ${props.isDisabled ? "link-v1-disabled" : props.isActive ? "link-v1-active" : "link-v1"}`}
             onClick={() => props.action && props.action()}
         >
             {

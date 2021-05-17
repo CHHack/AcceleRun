@@ -1,6 +1,6 @@
 .input-v1 {
     .input {
-        color: #0af8d2;    
+        color: #0af8d2;
         font-style: normal;
         font-weight: 400;
         font-size: 16px;
@@ -12,7 +12,10 @@
         background: #00000000;
         width: 100%;
     }
-    .area{
+    .input::placeholder {
+        color: #787688;
+    }
+    .area {
         min-height: 72px;
         margin-top: 5px;
     }
@@ -20,7 +23,7 @@
         border-bottom: 1px solid #0af8d2;
     }
     .input-title {
-        color: #ffffff;   
+        color: #ffffff;
         font-style: normal;
         font-weight: 400;
         font-size: 12px;

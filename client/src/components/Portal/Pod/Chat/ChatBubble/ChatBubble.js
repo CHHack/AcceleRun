@@ -11,7 +11,7 @@ function ChatBubble(props) {
             <div className="chat-bubble-text">
                 {!props.isPrevMine && <div className="top">
                     <div className="name">
-                        {props.name.split(" ")[0]}
+                        {props.name?.split(" ")[0]}
                     </div>
                     <div className="date">
                         {moment(props.creationTime).format("MM/DD/YYYY | hh:mm")}
@@ -22,7 +22,9 @@ function ChatBubble(props) {
                     {props.title}
                 </div>}
                 <div className="text">
-                    {props.content}
+                    {props.content.includes("[[link-macro]]") ?
+                        <a href={props.content.split('|')[1]} target="_blank">{props.content.split('|')[2]}</a> :
+                        props.content}
                 </div>
             </div>
         </div>

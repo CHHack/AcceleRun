@@ -3,39 +3,45 @@ import Tags from '@yaireo/tagify/dist/react.tagify';
 import search from '../../assets/Images/Icons/search.svg'
 import './TagsV1.scss'
 
-
-const tagifyCallbacks = {
-  // add: callback,
-  // remove: callback,
-  // input: callback,
-  // edit: callback,
-  // invalid: callback,
-  // click: callback,
-  // keydown: callback,
-  // focus: callback,
-  // blur: callback,
-  // "edit:input": callback,
-  // "edit:updated": callback,
-  // "edit:start": callback,
-  // "edit:keydown": callback,
-  // "dropdown:show": callback,
-  // "dropdown:hide": callback,
-  // "dropdown:select": callback
-}
-
 export default function TagsV1(props) {
   const tagifyRef = useRef()
-  const [tagifySettings, setTagifySettings] = useState([])
   const [tagifyProps, setTagifyProps] = useState({})
 
-  const baseTagifySettings = {
+
+  const onChange = useCallback((e) => {
+    if (!e.target?.value) {
+      return;
+    }
+    props.action(JSON.parse(e.target.value));
+  }, [])
+
+  const tagifyCallbacks = {
+    //add: onChange,
+    //remove: onChange,
+    // input: callback,
+    // edit: callback,
+    // invalid: callback,
+    // click: callback,
+    // keydown: callback,
+    // focus: callback,
+    // blur: callback,
+    // "edit:input": callback,
+    // "edit:updated": callback,
+    // "edit:start": callback,
+    // "edit:keydown": callback,
+    // "dropdown:show": callback,
+    // "dropdown:hide": callback,
+    // "dropdown:select": callback
+  }
+
+  const settings = {
+    callbacks: tagifyCallbacks,
     blacklist: [],
-    //backspace: "edit",
     placeholder: props.placeholder,
     dropdown: {
       enabled: 0,
       maxItems: 100
-    }
+    },
   }
 
   useEffect(() => {
@@ -44,22 +50,7 @@ export default function TagsV1(props) {
       whitelist: props.options,
       showFilteredDropdown: "a",
     });
-  }, [])
-
-
-  const settings = {
-    ...baseTagifySettings,
-    ...tagifySettings,
-    callbacks: tagifyCallbacks
-  }
-
-  const onChange = useCallback((e) => {
-    e.persist();
-    if (!e.target?.value) {
-      return;
-    }
-    props.action(JSON.parse(e.target.value));
-  }, [])
+  }, [props.placeholder])
 
   return (
     <div style={styles.inputContainer}>
@@ -74,6 +65,7 @@ export default function TagsV1(props) {
           tagifyRef={tagifyRef}
           settings={settings}
           value={props.dafaultValues}
+          placeholder="{props.placeholder}"
           autoFocus={false}
           {...tagifyProps}
           onChange={onChange}

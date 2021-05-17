@@ -1,17 +1,22 @@
 import { useEffect, useRef, useState } from "react";
+import { Animated } from "react-animated-css";
+import ReactTooltip from 'react-tooltip';
 import LinkV1 from "../../LinkV1/LinkV1";
 import MyTasks from "../../../assets/Images/Portal/EmptyStates/MyTasks.svg";
 import SecondaryButton from "../../SecondaryButton/SecondaryButton";
+import PrimaryButton from "../../PrimaryButton/PrimaryButton";
 import TimeLineEvent from "./TimeLineEvent/TimeLineEvent";
 import { EmptyState } from "../EmptyState";
 import Asset from "./Asset/Asset";
 import Chat from "./Chat/Chat";
 import moment from "moment";
+import Modal from "../../Modal/Modal";
 import "./Pod.scss";
 
 function Pod(props) {
     const chat = useRef(null);
     const [sortedEvents, setSortedEvents] = useState([]);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     useEffect(() => {
         if (props.state.context.chatBubble === "") {
@@ -28,19 +33,50 @@ function Pod(props) {
 
     return (
         <div className="pod">
+            <ReactTooltip arrowColor="#ffffff" className="tooltip" effect="solid" />
+            <Animated isVisible={isModalVisible} animateOnMount={false} animationInDuration={300} animationOutDuration={300}>
+                <Modal
+                    title="Leave group"
+                    subTitle={`Are you sure you would like to leave ${props.state.context.user.pod.name}?`}
+                    isVisible={true}
+                    setIsVisible={setIsModalVisible}
+                    buttons={(
+                        <div>
+                            <SecondaryButton text="Cancel" isActive={true} action={() => setIsModalVisible(false)} />
+                            <PrimaryButton
+                                text="Leave"
+                                isActive={true}
+                                action={() => {
+                                    setIsModalVisible(false);
+                                    props.sendMachine({ type: "LEAVE_POD", userId: props.state.context.user.email });
+                                }} />
+                        </div>)} >
+                </Modal>
+            </Animated>
+
             <div className="pod-nav">
                 <h1>{props.state.context.user.pod.name}</h1>
                 <div className="buttons">
-                    <LinkV1
-                        action={() => props.sendMachine("POD")}
-                        isActive={props.state.matches("portal.pod")}
-                        text="Home"
-                    />
-                    <LinkV1
-                        action={() => props.sendMachine("MY_TASKS")}
-                        isActive={props.state.matches("portal.myTasks")}
-                        text="My tasks"
-                    />
+                    <div className="top">
+                        <LinkV1
+                            action={() => props.sendMachine("POD")}
+                            isActive={props.state.matches("portal.pod")}
+                            text="Home"
+                        />
+                        <LinkV1
+                            action={() => props.sendMachine("MY_TASKS")}
+                            isActive={props.state.matches("portal.myTasks")}
+                            text="My tasks"
+                        />
+                    </div>
+                    <div className="bottom">
+                        <LinkV1
+                            isDisabled={true}
+                            // isActive={props.state.matches("portal.myTasks")}
+                            action={() => setIsModalVisible(true)}
+                            text="Leave group"
+                        />
+                    </div>
                 </div>
             </div>
             {
@@ -59,8 +95,8 @@ function Pod(props) {
                                                 key={index}
                                                 isActive={index === 0}
                                                 isNext={index === 1}
-                                                date={moment(podEvent.date).format("MM.DD.YYYY")}
-                                                style={{ left: `${((index < 2 ? 1 : 1.3) * index * 200)}px` }}
+                                                date={podEvent.date}
+                                                style={{ left: `${((index > 1 ? 200 : 0) + index * 200)}px` }}
                                                 title={podEvent.title}
                                                 content={podEvent.content}
                                             />)
@@ -73,7 +109,7 @@ function Pod(props) {
                                     <Chat state={props.state} sendMachine={props.sendMachine} />
                                 </div>
                                 <div className="pod-assets">
-                                    <h1>{props.state.context.user.pod.name} assets library</h1>
+                                    <h1>{props.state.context.user.pod.name} shared assets</h1>
                                     <Asset
                                         type="Figma"
                                         asset={props.state.context.user.pod.assets.find(asset => asset.type === "Figma")}
@@ -111,7 +147,7 @@ function Pod(props) {
                             <div className="team-members">
                                 <div className="team-member">
                                     {props.state.context.user.pod.members.filter(member => member.type !== "bot").map(member => {
-                                        return (<img src={member.imageSource} />)
+                                        return (<img data-tip={member.name?.toLowerCase()} src={member.imageSource} />)
                                     })}
                                 </div>
                             </div>

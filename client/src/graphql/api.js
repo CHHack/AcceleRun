@@ -6,6 +6,7 @@ import {
     GET_PERSON,
     ADD_SKILLS_TO_PERSON_MUTATION,
     ADD_PERSON_TO_POD,
+    REMOVE_PERSON_FROM_POD,
     ADD_CHAT_BUBBLE_TO_POD,
     ADD_ASSET_TO_POD,
     UPDATE_ASSET,
@@ -60,13 +61,13 @@ const api = {
     },
     addPod: async (name, idea, creation_time) => {
 
-        const members = [{ email: `accelebot-${name}@accelerun.co`, name: "Accelerun", type: "bot" }];
+        const members = [{ email: `accelebot-${name}@accelerun.co`, name: "AcceleBot", type: "bot" }];
         const events = [
-            { creation_time: moment().toISOString(), date: moment().toISOString(), title: "Pod created", content: "Let's do this!" },
-            { creation_time: moment().toISOString(), date: moment().add(1,"d").toISOString(), title: "Team intro", content: "Your first team meeting" },
-            { creation_time: moment().toISOString(), date: moment().add(5,"d").toISOString(), title: "Team sync", content: "Let's see what you've done :)" },
-            { creation_time: moment().toISOString(), date: moment().add(7,"d").toISOString(), title: "Pre prod testing", content: "Last chance to find and fix all bugs" },
-            { creation_time: moment().toISOString(), date: moment().add(10,"d").toISOString(), title: "Going Live!", content: "You've done it!!!" },
+            { creation_time: moment().toISOString(), date: moment("02 April 2021 03:30 PM").toISOString(), title: "Check-in starts", content: "Getting started with an opening event." },
+            { creation_time: moment().toISOString(), date: moment("02 April 2021 05:00 PM").toISOString(), title: "Breakout design", content: "Find your team!" },
+            { creation_time: moment().toISOString(), date: moment("04 April 2021 11:30 AM").toISOString(), title: "Announcements", content: "Last day updates." },
+            { creation_time: moment().toISOString(), date: moment("04 April 2021 04:30 PM").toISOString(), title: "Submit designs", content: "Hand-in final designs." },
+            { creation_time: moment().toISOString(), date: moment("04 April 2021 05:30 PM").toISOString(), title: "Judging & results", content: "Judging begins and soon after results & awards will be handed" },
         ];
 
         return await apolloClient.mutate({
@@ -75,20 +76,46 @@ const api = {
     },
     addPersonToPod: async (name, person) => {
 
-        const bubble = {
-            title: `Hello ${person.name} :)`,
-            content: "We are so happy to see you here!",
-            creation_time: new Date().toISOString(),
-            person: { email: `accelebot-${name}@accelerun.co` }
-        };
-
-        const chatBubbles = [bubble];
         const members = [person];
+        const chatBubbles = [];
+
+        if (person.type !== "admin") {
+            const bubble = {
+                title: `Hello ${person.name} :)`,
+                content: "We are so happy to see you here!",
+                creation_time: new Date().toISOString(),
+                person: { email: `accelebot-${name}@accelerun.co` }
+            };
+            chatBubbles.push(bubble);
+        }
 
         return await apolloClient.mutate({
             mutation: ADD_PERSON_TO_POD, variables: {
                 name,
                 members,
+                chatBubbles
+            }
+        })
+    },
+    removePersonFromPod: async (pod, person) => {
+
+        const chatBubbles = [];
+        const name = pod.name;
+        const email = person.email;
+
+        if (person.type !== "admin") {
+            const bubble = {
+                content: `${person.name} left the pod`,
+                creation_time: new Date().toISOString(),
+                person: { email: `accelebot-${pod.name}@accelerun.co` }
+            };
+            chatBubbles.push(bubble);
+        }
+
+        return await apolloClient.mutate({
+            mutation: REMOVE_PERSON_FROM_POD, variables: {
+                name,
+                email,
                 chatBubbles
             }
         })
@@ -101,11 +128,27 @@ const api = {
             }
         })
     },
-    addAssetToPod: async (name, assets) => {
+    addAssetToPod: async (person, podName, asset) => {
+
+        const chatBubbles = [];
+        const assets = [asset];
+        const name = podName;
+
+        if(person.type !== "admin"){
+            const bubble = {
+                title: `${person.name} added a new asset`,
+                content: `[[link-macro]]|${asset.url}|${asset.name}`,
+                creation_time: new Date().toISOString(),
+                person: { email: `accelebot-${podName}@accelerun.co` }
+            };
+            chatBubbles.push(bubble);
+        }
+
         return await apolloClient.mutate({
             mutation: ADD_ASSET_TO_POD, variables: {
                 name,
-                assets
+                assets,
+                chatBubbles
             }
         })
     },

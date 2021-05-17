@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import ReactTooltip from 'react-tooltip';
 import AccountMenu from "./AccountMenu";
 import ProfileSvg from "./ProfileSvg";
 import IdeasFlag from "./IdeasFlagSvg";
@@ -23,7 +23,8 @@ export const Nav = (props) => {
 
 	return (
 		<div className="nav">
-			<div className="logo">
+			<ReactTooltip arrowColor="#ffffff" className="tooltip" effect="solid" />
+			<div className="logo" onClick={() => props.sendMachine("IDEAS")}>
 				<img src={Logo} alt="logo" />
 			</div>
 			<div className="nav-items">
@@ -35,20 +36,20 @@ export const Nav = (props) => {
 						{podIconText}
 					</div>
 				}
-				<button onClick={() => props.sendMachine("IDEAS")}>
+				<button data-tip="Dashboard" onClick={() => props.sendMachine("IDEAS")}>
 					<IdeasFlag fill={props.state.matches("portal.ideas") ? neonGreen : gray} />
 				</button>
-				<button onClick={() => props.sendMachine("COMMUNITY")}>
+				<button data-tip="Community" onClick={() => props.sendMachine("COMMUNITY")}>
 					<FolderSvg fill={props.state.matches("portal.community") ? neonGreen : gray} />
 				</button>
-				<button onClick={() => props.sendMachine("SHARE")}>
+				<button data-tip="AcceleShare" onClick={() => props.sendMachine("SHARE")}>
 					<GraphSvg fill={props.state.matches("portal.share") ? neonGreen : gray} />
 				</button>
 			</div>
 			<div className="profile-nav-items">
-				<button >
+				{/* <button >
 					<BellSvg fill={false ? neonGreen : gray} />
-				</button>
+				</button> */}
 				<button id="account-menu" onClick={() => setAccountMenuState(!accountMenuState)}>
 					<ProfileSvg fill={accountMenuState ? neonGreen : gray} />
 				</button>

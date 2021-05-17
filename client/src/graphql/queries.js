@@ -6,6 +6,7 @@ export const GET_PERSON = gql`
       onBoarded
       name
       email
+      type
       imageSource
       pod {
         name
@@ -13,6 +14,8 @@ export const GET_PERSON = gql`
         members{
           imageSource
           type
+          email
+          name
         }
         idea {
           name
@@ -199,6 +202,40 @@ export const ADD_PERSON_TO_POD = gql`
   }
 `
 
+export const REMOVE_PERSON_FROM_POD = gql`
+  mutation removeMemberFromPod($name:String, $email: String, $chatBubbles: [ChatBubbleRef]) {
+    updatePod(input: {set: {chat:$chatBubbles}, remove:{members: {email: $email}}, filter: {name: {eq: $name}}}){
+      pod {
+        name,
+        creation_time
+        members{
+          imageSource
+        }
+        chat {
+          creation_time
+          content
+          title
+          person {
+            imageSource
+            name
+          }
+        }
+        events {
+          title
+          date
+          creation_time
+          content
+        }
+        assets {
+          type
+          url
+          name
+        }
+      }
+    }
+  }
+`
+
 export const ADD_CHAT_BUBBLE_TO_POD = gql`
   mutation addChatBubbleToPod($name:String, $chatBubble: [ChatBubbleRef]) {
     updatePod(input: {filter: {name: {eq: $name}},set: {chat: $chatBubble}}){
@@ -234,8 +271,8 @@ export const ADD_CHAT_BUBBLE_TO_POD = gql`
 `
 
 export const ADD_ASSET_TO_POD = gql`
-  mutation addAssetToPod($name:String, $assets: [AssetRef]) {
-    updatePod(input: {filter: {name: {eq: $name}},set: {assets: $assets}}){
+  mutation addAssetToPod($name:String, $assets: [AssetRef], $chatBubbles: [ChatBubbleRef]) {
+    updatePod(input: {filter: {name: {eq: $name}},set: {assets: $assets, chat: $chatBubbles}}){
       pod {
         name,
         creation_time
