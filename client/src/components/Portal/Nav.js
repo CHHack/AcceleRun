@@ -6,7 +6,7 @@ import IdeasFlag from "./IdeasFlagSvg";
 import FolderSvg from "./FolderSvg";
 import GraphSvg from "./GraphSvg";
 import BellSvg from "./BellSvg";
-import Logo from "../../assets/Images/Portal/Nav/AccelerunIcon.svg";
+import Logo from "../../assets/Images/Portal/Nav/AccelerunIcon.svg"
 import "./Nav.scss";
 import { Animated } from "react-animated-css";
 

@@ -122,7 +122,7 @@ export default function App() {
 
 	return (
 		<div className="app">
-			{/* <div className="state-machine">{JSON.stringify(state.context, null, 2)}</div> */}
+			<div className="state-machine">{JSON.stringify(state.context, null, 2)}</div>
 			{!(state.matches("portal") || state.matches("loading")) && (<div className="eclipse-wrapper" />)}
 
 			{
