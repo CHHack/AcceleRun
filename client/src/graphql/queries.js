@@ -9,9 +9,10 @@ export const GET_PERSON = gql`
       type
       imageSource
       pod {
+        id
         name
         creation_time
-        members{
+        members {
           imageSource
           type
           email
@@ -112,6 +113,7 @@ export const ADD_POD = gql`
   mutation addPod($name:String!, $idea:IdeaRef!, $creation_time: DateTime, $members: [PersonRef], $events: [EventRef]) {
     addPod(input: {name: $name, idea: $idea, creation_time: $creation_time, members: $members, events: $events}) {
       pod {
+        id
         name
       }
     }
@@ -123,10 +125,11 @@ export const QUERY_PODS = gql`
     queryPod(first: $pageSize) {
       name
       creation_time
-      members{
+      members {
         imageSource
-        name
         type
+        email
+        name
       }
       assets {
         url
@@ -161,8 +164,10 @@ export const QUERY_PODS = gql`
         }
       }
       members {
-        name
+        imageSource
         type
+        email
+        name
       }
     }
   }
@@ -172,10 +177,14 @@ export const ADD_PERSON_TO_POD = gql`
   mutation addMemberToPod($name:String, $members: [PersonRef], $chatBubbles: [ChatBubbleRef]) {
     updatePod(input: {set: {members: $members, chat:$chatBubbles}, filter: {name: {eq: $name}}}){
       pod {
-        name,
+        id
+        name
         creation_time
-        members{
+        members {
           imageSource
+          type
+          email
+          name
         }
         chat {
           creation_time
@@ -206,10 +215,14 @@ export const REMOVE_PERSON_FROM_POD = gql`
   mutation removeMemberFromPod($name:String, $email: String, $chatBubbles: [ChatBubbleRef]) {
     updatePod(input: {set: {chat:$chatBubbles}, remove:{members: {email: $email}}, filter: {name: {eq: $name}}}){
       pod {
-        name,
+        id
+        name
         creation_time
-        members{
+        members {
           imageSource
+          type
+          email
+          name
         }
         chat {
           creation_time
@@ -240,10 +253,14 @@ export const ADD_CHAT_BUBBLE_TO_POD = gql`
   mutation addChatBubbleToPod($name:String, $chatBubble: [ChatBubbleRef]) {
     updatePod(input: {filter: {name: {eq: $name}},set: {chat: $chatBubble}}){
       pod {
-        name,
+        id
+        name
         creation_time
-        members{
+        members {
           imageSource
+          type
+          email
+          name
         }
         chat {
           creation_time
@@ -274,10 +291,14 @@ export const ADD_ASSET_TO_POD = gql`
   mutation addAssetToPod($name:String, $assets: [AssetRef], $chatBubbles: [ChatBubbleRef]) {
     updatePod(input: {filter: {name: {eq: $name}},set: {assets: $assets, chat: $chatBubbles}}){
       pod {
-        name,
+        id
+        name
         creation_time
-        members{
+        members {
           imageSource
+          type
+          email
+          name
         }
         chat {
           creation_time
@@ -286,6 +307,8 @@ export const ADD_ASSET_TO_POD = gql`
           person {
             imageSource
             name
+            type
+            email
           }
         }
         events {

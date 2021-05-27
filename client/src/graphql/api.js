@@ -17,6 +17,8 @@ import {
 
 const api = {
     getPerson: async (email) => {
+        // const res = await fetch(`http://localhost:5000/api/users/${email}`);
+        // return await res.json();
         return await apolloClient.query({
             query: GET_PERSON, variables: {
                 email
@@ -43,42 +45,31 @@ const api = {
     addSkillToPerson: async ({ email, skills, positions }) => {
         return await apolloClient.mutate({
             mutation: ADD_SKILLS_TO_PERSON_MUTATION, variables: {
-                email,
-                skills,
-                positions
+                email, skills, positions
             }
         })
     },
     addIdea: async ({ name, goal, skillsNeeded, categories }) => {
         return await apolloClient.mutate({
-            mutation: ADD_IDEA, variables: {
-                name,
-                goal,
-                skillsNeeded,
-                categories
-            }
+            mutation: ADD_IDEA, variables: { name, goal, skillsNeeded, categories }
         })
     },
     addPod: async (name, idea, creation_time) => {
 
         const members = [{ email: `accelebot-${name}@accelerun.co`, name: "AcceleBot", type: "bot" }];
         const events = [
-            { creation_time: moment().toISOString(), date: moment("02 April 2021 03:30 PM").toISOString(), title: "Check-in starts", content: "Getting started with an opening event." },
-            { creation_time: moment().toISOString(), date: moment("02 April 2021 05:00 PM").toISOString(), title: "Breakout design", content: "Find your team!" },
-            { creation_time: moment().toISOString(), date: moment("04 April 2021 11:30 AM").toISOString(), title: "Announcements", content: "Last day updates." },
-            { creation_time: moment().toISOString(), date: moment("04 April 2021 04:30 PM").toISOString(), title: "Submit designs", content: "Hand-in final designs." },
-            { creation_time: moment().toISOString(), date: moment("04 April 2021 05:30 PM").toISOString(), title: "Judging & results", content: "Judging begins and soon after results & awards will be handed" },
+            { creation_time: moment().toISOString(), date: moment().toISOString(), title: "Pod created", content: "Let's do this!" },
+            { creation_time: moment().toISOString(), date: moment().add(1, "d").toISOString(), title: "Team intro", content: "Your first team meeting" },
+            { creation_time: moment().toISOString(), date: moment().add(5, "d").toISOString(), title: "Team sync", content: "Let's see what you've done :)" },
+            { creation_time: moment().toISOString(), date: moment().add(7, "d").toISOString(), title: "Pre prod testing", content: "Last chance to find and fix all bugs" },
+            { creation_time: moment().toISOString(), date: moment().add(10, "d").toISOString(), title: "Going Live!", content: "You've done it!!!" }
         ];
 
-        return await apolloClient.mutate({
-            mutation: ADD_POD, variables: { name, idea, creation_time, members, events }
-        })
+        return await apolloClient.mutate({ mutation: ADD_POD, variables: { name, idea, creation_time, members, events } })
     },
     addPersonToPod: async (name, person) => {
-
         const members = [person];
         const chatBubbles = [];
-
         if (person.type !== "admin") {
             const bubble = {
                 title: `Hello ${person.name} :)`,
@@ -88,14 +79,7 @@ const api = {
             };
             chatBubbles.push(bubble);
         }
-
-        return await apolloClient.mutate({
-            mutation: ADD_PERSON_TO_POD, variables: {
-                name,
-                members,
-                chatBubbles
-            }
-        })
+        return await apolloClient.mutate({ mutation: ADD_PERSON_TO_POD, variables: { name, members, chatBubbles } })
     },
     removePersonFromPod: async (pod, person) => {
 
@@ -134,7 +118,7 @@ const api = {
         const assets = [asset];
         const name = podName;
 
-        if(person.type !== "admin"){
+        if (person.type !== "admin") {
             const bubble = {
                 title: `${person.name} added a new asset`,
                 content: `[[link-macro]]|${asset.url}|${asset.name}`,

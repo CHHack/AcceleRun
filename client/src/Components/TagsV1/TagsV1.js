@@ -7,7 +7,6 @@ export default function TagsV1(props) {
   const tagifyRef = useRef()
   const [tagifyProps, setTagifyProps] = useState({})
 
-
   const onChange = useCallback((e) => {
     if (!e.target?.value) {
       return;
@@ -50,7 +49,7 @@ export default function TagsV1(props) {
       whitelist: props.options,
       showFilteredDropdown: "a",
     });
-  }, [props.placeholder])
+  }, [])
 
   return (
     <div style={styles.inputContainer}>
@@ -65,7 +64,7 @@ export default function TagsV1(props) {
           tagifyRef={tagifyRef}
           settings={settings}
           value={props.dafaultValues}
-          placeholder="{props.placeholder}"
+          placeholder={props.placeholder}
           autoFocus={false}
           {...tagifyProps}
           onChange={onChange}

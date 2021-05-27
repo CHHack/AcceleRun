@@ -47,7 +47,22 @@ const addChatBubble = async (context, event) => {
 		return;
 	}
 	const res = await api.addChatBubbleToPod(context.user.pod.name, [context.chatBubble]);
+	await sendEmailNotification(context.user, context.chatBubble);
 	return res.data.updatePod.pod;
+}
+
+const sendEmailNotification = async (user, bubble) => {
+	// try {
+	// 	const url = `http://localhost:5000/api/pods/${user.pod.id}/notification`;
+	// 	await fetch(url, {
+	// 		method: 'POST',
+	// 		headers: { 'Content-Type': 'application/json' },
+	// 		body: JSON.stringify({ user, bubble })
+	// 	});
+	// }
+	// catch (e) {
+	// 	console.log(e);
+	// }
 }
 
 const addAsset = async (context) => {
@@ -55,6 +70,14 @@ const addAsset = async (context) => {
 		return;
 	}
 	const res = await api.addAssetToPod(context.user, context.user.pod.name, context.asset);
+
+	const notificationBubble = {
+		content: `${context.user.name} added a new asset:
+			<br>
+			<a href="${context.asset.url}" target="__blank">${context.asset.name}</a>`
+	};
+
+	await sendEmailNotification(context.user, notificationBubble);
 	return res.data.updatePod.pod;
 }
 
@@ -118,6 +141,12 @@ const addPersonToPod = async (context) => {
 	try {
 		const { user, selectedPod } = context;
 		const res = await api.addPersonToPod(selectedPod.name, { email: user.email, name: user.name, type: user.type });
+
+		const notificationBubble = {
+			content: `${user.name} just joined to the Pod :)`
+		};
+		await sendEmailNotification(context.user, notificationBubble);
+
 		return res.data.updatePod.pod;
 	} catch (error) {
 		console.log(error);

@@ -97,7 +97,6 @@ export default function Skills(props) {
                         }
                     </div>
                 </div>
-                {positions.length}
                 <TagsV1
                     dafaultValues={props.state.context.user.positions?.toString()}
                     title="What do you do?"
@@ -105,7 +104,6 @@ export default function Skills(props) {
                     options={PositionsModel}
                     action={onSetPositions}
                 />
-                {skills.length}
                 <TagsV1
                     dafaultValues={props.state.context.user.skills?.toString()}
                     title="What skills do you have to offer?"
